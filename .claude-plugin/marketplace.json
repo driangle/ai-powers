@@ -18,7 +18,8 @@
         "./skills/pr-description",
         "./skills/pr-review",
         "./skills/pr-stack",
-        "./skills/commit-msg"
+        "./skills/commit-msg",
+        "./skills/pr-open"
       ]
     }
   ]

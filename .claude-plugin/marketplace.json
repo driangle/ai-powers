@@ -1,0 +1,25 @@
+{
+  "name": "ai-powers",
+  "owner": {
+    "name": "German Greiner",
+    "email": "ggreiner9@gmail.com"
+  },
+  "metadata": {
+    "description": "PR workflow and commit skills",
+    "version": "0.0.1"
+  },
+  "plugins": [
+    {
+      "name": "pr-workflow",
+      "description": "Collection of PR and commit workflow skills including PR descriptions, reviews, stacking, and commit messages",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/pr-description",
+        "./skills/pr-review",
+        "./skills/pr-stack",
+        "./skills/commit-msg"
+      ]
+    }
+  ]
+}

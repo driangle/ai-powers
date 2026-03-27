@@ -21,6 +21,15 @@
         "./skills/commit-msg",
         "./skills/pr-open"
       ]
+    },
+    {
+      "name": "audit",
+      "description": "Comprehensive codebase audit covering security, privacy, data integrity, architecture, and code quality",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/audit"
+      ]
     }
   ]
 }

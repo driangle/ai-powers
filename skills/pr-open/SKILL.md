@@ -1,27 +1,29 @@
 ---
 name: pr-open
 description: Open a GitHub PR for the current branch. Generates a title and description from the diff, and respects the repo's PULL_REQUEST_TEMPLATE if one exists.
+allowed-tools: Bash, Read, Glob
 ---
 
-1. Determine the base branch (most likely `master` or `main`). Run the following in parallel:
+1. Detect the base branch via `git remote show origin | grep 'HEAD branch'`. Run in parallel:
    - `git diff <base> --name-only` and `git diff <base>` to understand changes
-   - `git log <base>..HEAD --oneline` to see commit history on this branch
-   - `git status -u` to check for uncommitted changes
-   - Check for a PR template: look for `.github/PULL_REQUEST_TEMPLATE.md` or `.github/PULL_REQUEST_TEMPLATE/` directory in the repo root
+   - `git log <base>..HEAD --oneline` to see commit history
+   - `git status` to check for uncommitted changes
+   - `git log @{u}..HEAD --oneline 2>/dev/null` to check if the branch needs pushing
+   - Check for `.github/PULL_REQUEST_TEMPLATE.md` or `.github/PULL_REQUEST_TEMPLATE/` directory
 
 2. If there are uncommitted changes, ask the user whether to commit them first or proceed without them.
 
-3. Check if the branch needs to be pushed to the remote. If so, ask the user to push their changes first and stop. Do NOT push on their behalf.
+3. If the branch needs pushing, push it with `git push -u origin HEAD`.
 
-4. Review all changes (all commits since base, not just the latest) and draft:
+4. Review all changes (all commits since base) and draft:
    - A short PR title (under 70 characters)
    - A concise description summarizing what changed and why
 
 5. Build the PR body:
-   - **If a PR template exists:** Read it. Fill in the description/summary section with the generated content. Preserve all other sections, HTML comments, and placeholders from the template exactly as they are.
-   - **If no PR template exists:** Use a simple body with a `## Summary` section containing the description.
+   - **If a PR template exists:** Fill in the description/summary section. Preserve all other sections and placeholders from the template.
+   - **If no template:** Use a simple body with a `## Summary` section.
 
-6. Create the PR using `gh pr create`. Use a HEREDOC for the body:
+6. Create the PR using `gh pr create` with a HEREDOC for the body:
    ```
    gh pr create --title "the pr title" --body "$(cat <<'EOF'
    <body content here>

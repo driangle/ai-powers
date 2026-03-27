@@ -10,20 +10,10 @@ Generate a single-line commit message using the Conventional Commits format.
 
 ## Steps
 
-1. Run `git diff --cached HEAD` to get the staged diff against HEAD.
-2. If the diff is empty, run `git diff HEAD` to check for unstaged changes. If that is also empty, output: `chore: no changes detected` and stop.
-3. Analyze the diff and write ONE line in Conventional Commits format:
-   - `feat: ...` for new features
-   - `fix: ...` for bug fixes
-   - `refactor: ...` for restructuring without behavior change
-   - `chore: ...` for maintenance, deps, config
-   - `docs: ...` for documentation only
-   - `test: ...` for adding or updating tests
-   - `style: ...` for formatting, whitespace, semicolons
-   - `perf: ...` for performance improvements
-   - `ci: ...` for CI/CD changes
-   - Add a scope in parentheses when the change is clearly scoped to one module, e.g. `fix(auth): ...`
-4. Keep the message under 72 characters. Use imperative mood ("add", "fix", "update", not "added", "fixes", "updated"). Be specific but concise.
+1. Run `git diff --cached HEAD` to get the staged diff.
+2. If the diff is empty, output: `No staged changes found. Stage your changes with git add first.` and stop.
+3. Analyze the diff and write ONE line in Conventional Commits format (feat, fix, refactor, chore, docs, test, style, perf, ci). Add a scope when clearly scoped to one module, e.g. `fix(auth): ...`.
+4. Keep the message under 72 characters. Use imperative mood ("add", "fix", "update"). Be specific but concise.
 
 ## Output
 

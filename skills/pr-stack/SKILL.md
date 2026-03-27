@@ -58,7 +58,7 @@ Rules:
 
 4. After all branches are created, switch back to the source branch and list the PR branches.
 
-5. Ask if the user wants to push and open PRs. For stacked PRs, set PR N's base to PR N-1's branch. Respect `PULL_REQUEST_TEMPLATE.md` if one exists.
+5. Ask if the user wants to push and open PRs. **Never force-push. Never push to the main/master branch.** For stacked PRs, set PR N's base to PR N-1's branch. Respect `PULL_REQUEST_TEMPLATE.md` if one exists.
 
 ## Edge cases
 

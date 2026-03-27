@@ -13,7 +13,7 @@ allowed-tools: Bash, Read, Glob
 
 2. If there are uncommitted changes, ask the user whether to commit them first or proceed without them.
 
-3. If the branch needs pushing, push it with `git push -u origin HEAD`.
+3. If the branch needs pushing, push it with `git push -u origin HEAD`. **Never force-push. Never push to the main/master branch.**
 
 4. Review all changes (all commits since base) and draft:
    - A short PR title (under 70 characters)

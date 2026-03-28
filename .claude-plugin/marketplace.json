@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "PR workflow and commit skills",
-    "version": "0.0.2"
+    "version": "0.0.3"
   },
   "plugins": [
     {
@@ -30,6 +30,16 @@
       "skills": [
         "./skills/audit",
         "./skills/dead-code"
+      ]
+    },
+    {
+      "name": "codebase-ops",
+      "description": "Structured refactoring and codebase migration skills: extract, split, rename, swap libraries, upgrade dependencies, and modernize patterns",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/refactor",
+        "./skills/migrate"
       ]
     }
   ]

@@ -14,12 +14,14 @@ From inside Claude Code interactive mode:
 /plugin install <plugin_name>@driangle-ai-powers
 ```
 
-Available plugins: `pr-workflow`, `codebase-analysis`
+Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`
 
 ## Skills
 
 - **audit** - Perform a comprehensive codebase audit covering security, privacy, data integrity, architecture, and code quality
 - **dead-code** - Find dead code: unused exports, orphaned files, unreachable code paths, unused dependencies, and stale artifacts
+- **migrate** - Perform codebase migrations: upgrade dependencies, swap libraries, adopt new APIs or patterns
+- **refactor** - Structured refactoring: extract module, split file, inline, rename, simplify, decouple, reorganize
 - **commit-msg** - Generate conventional commit messages from staged changes
 - **pr-description** - Generate concise PR descriptions from diffs
 - **pr-open** - Open GitHub PRs with auto-generated titles and descriptions

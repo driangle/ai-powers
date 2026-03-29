@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "PR workflow and commit skills",
-    "version": "0.0.5"
+    "version": "0.0.6"
   },
   "plugins": [
     {
@@ -42,6 +42,24 @@
         "./skills/migrate",
         "./skills/triage-dependabot",
         "./skills/setup-targets"
+      ]
+    },
+    {
+      "name": "release",
+      "description": "Versioned releases with automated version bumps, tagging, release notes, and GitHub release publishing",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/release"
+      ]
+    },
+    {
+      "name": "planning",
+      "description": "Pre-coding project planning: decompose specs, requirements, and design docs into actionable task files",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/spec-decompose"
       ]
     }
   ]

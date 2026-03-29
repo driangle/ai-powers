@@ -14,7 +14,7 @@ From inside Claude Code interactive mode:
 /plugin install <plugin_name>@driangle-ai-powers
 ```
 
-Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`
+Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`, `planning`
 
 ## Skills
 
@@ -29,3 +29,5 @@ Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`
 - **pr-review** - Review GitHub PRs and post author-addressed comments
 - **pr-stack** - Split large feature branches into smaller, stacked PRs
 - **setup-targets** - Set up standardized build targets (compile, lint, test, build) per project, top-level check/check-lite, pre-commit hook, and CI workflow
+- **release** - Create versioned releases with automated version bumps, tagging, release notes, and GitHub release publishing
+- **spec-decompose** - Decompose specs, requirements, or design docs into actionable task files

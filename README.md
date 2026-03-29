@@ -28,3 +28,4 @@ Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`
 - **pr-open** - Open GitHub PRs with auto-generated titles and descriptions
 - **pr-review** - Review GitHub PRs and post author-addressed comments
 - **pr-stack** - Split large feature branches into smaller, stacked PRs
+- **setup-targets** - Set up standardized build targets (compile, lint, test, build) per project, top-level check/check-lite, pre-commit hook, and CI workflow

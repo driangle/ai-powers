@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "PR workflow and commit skills",
-    "version": "0.0.3"
+    "version": "0.0.4"
   },
   "plugins": [
     {
@@ -39,7 +39,8 @@
       "strict": false,
       "skills": [
         "./skills/refactor",
-        "./skills/migrate"
+        "./skills/migrate",
+        "./skills/triage-dependabot"
       ]
     }
   ]

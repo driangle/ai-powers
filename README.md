@@ -21,7 +21,7 @@ Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`
 - **audit** - Perform a comprehensive codebase audit covering security, privacy, data integrity, architecture, and code quality
 - **dead-code** - Find dead code: unused exports, orphaned files, unreachable code paths, unused dependencies, and stale artifacts
 - **test-audit** - Audit test suites for legitimacy: detect tautologies, over-mocking, trivially-passing assertions, and misleading coverage
-- **triage-dependabot** - Triage Dependabot security alerts: prioritize by severity, pick one to fix, and plan the remediation
+- **triage-dependabot** - Triage Dependabot alerts: group by package, find high-payoff upgrades and removal candidates, then plan a fix
 - **migrate** - Perform codebase migrations: upgrade dependencies, swap libraries, adopt new APIs or patterns
 - **refactor** - Structured refactoring: extract module, split file, inline, rename, simplify, decouple, reorganize
 - **commit-msg** - Generate conventional commit messages from staged changes

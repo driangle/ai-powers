@@ -14,7 +14,7 @@ From inside Claude Code interactive mode:
 /plugin install <plugin_name>@driangle-ai-powers
 ```
 
-Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`, `planning`
+Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`, `planning`, `execution`
 
 ## Skills
 

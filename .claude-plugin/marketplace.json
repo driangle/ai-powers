@@ -60,7 +60,15 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/spec-decompose",
+        "./skills/spec-decompose"
+      ]
+    },
+    {
+      "name": "execution",
+      "description": "End-to-end task execution: pick up tasks, implement, verify, and commit in one step",
+      "source": "./",
+      "strict": false,
+      "skills": [
         "./skills/work"
       ]
     }

@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "PR workflow and commit skills",
-    "version": "0.0.11"
+    "version": "0.0.13"
   },
   "plugins": [
     {
@@ -29,6 +29,7 @@
       "source": "./plugins/codebase-analysis",
       "strict": false,
       "skills": [
+        "./api-review",
         "./audit",
         "./dead-code",
         "./test-audit"
@@ -70,6 +71,7 @@
       "source": "./plugins/execution",
       "strict": false,
       "skills": [
+        "./fix-feedback",
         "./work"
       ]
     }

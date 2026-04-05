@@ -6,71 +6,71 @@
   },
   "metadata": {
     "description": "PR workflow and commit skills",
-    "version": "0.0.10"
+    "version": "0.0.11"
   },
   "plugins": [
     {
       "name": "pr-workflow",
       "description": "Collection of PR and commit workflow skills including PR descriptions, reviews, stacking, and commit messages",
-      "source": "./",
+      "source": "./plugins/pr-workflow",
       "strict": false,
       "skills": [
-        "./powers/commit",
-        "./powers/commit-msg",
-        "./powers/pr-open",
-        "./powers/pr-description",
-        "./powers/pr-review",
-        "./powers/pr-stack"
+        "./commit",
+        "./commit-msg",
+        "./pr-open",
+        "./pr-description",
+        "./pr-review",
+        "./pr-stack"
       ]
     },
     {
       "name": "codebase-analysis",
       "description": "Codebase analysis skills: comprehensive audits (security, privacy, architecture, code quality) and dead code detection",
-      "source": "./",
+      "source": "./plugins/codebase-analysis",
       "strict": false,
       "skills": [
-        "./powers/audit",
-        "./powers/dead-code",
-        "./powers/test-audit"
+        "./audit",
+        "./dead-code",
+        "./test-audit"
       ]
     },
     {
       "name": "codebase-ops",
       "description": "Structured refactoring and codebase migration skills: extract, split, rename, swap libraries, upgrade dependencies, and modernize patterns",
-      "source": "./",
+      "source": "./plugins/codebase-ops",
       "strict": false,
       "skills": [
-        "./powers/refactor",
-        "./powers/migrate",
-        "./powers/triage-dependabot",
-        "./powers/setup-targets"
+        "./refactor",
+        "./migrate",
+        "./triage-dependabot",
+        "./setup-targets"
       ]
     },
     {
       "name": "release",
       "description": "Versioned releases with automated version bumps, tagging, release notes, and GitHub release publishing",
-      "source": "./",
+      "source": "./plugins/release",
       "strict": false,
       "skills": [
-        "./powers/release"
+        "./release"
       ]
     },
     {
       "name": "planning",
       "description": "Pre-coding project planning: decompose specs, requirements, and design docs into actionable task files",
-      "source": "./",
+      "source": "./plugins/planning",
       "strict": false,
       "skills": [
-        "./powers/spec-decompose"
+        "./spec-decompose"
       ]
     },
     {
       "name": "execution",
       "description": "End-to-end task execution: pick up tasks, implement, verify, and commit in one step",
-      "source": "./",
+      "source": "./plugins/execution",
       "strict": false,
       "skills": [
-        "./powers/work"
+        "./work"
       ]
     }
   ]

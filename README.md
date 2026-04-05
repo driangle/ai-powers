@@ -24,6 +24,7 @@ Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`
 - **triage-dependabot** - Triage Dependabot alerts: group by package, find high-payoff upgrades and removal candidates, then plan a fix
 - **migrate** - Perform codebase migrations: upgrade dependencies, swap libraries, adopt new APIs or patterns
 - **refactor** - Structured refactoring: extract module, split file, inline, rename, simplify, decouple, reorganize
+- **commit** - Stage and commit all uncommitted changes with an auto-generated conventional commit message
 - **commit-msg** - Generate conventional commit messages from staged changes
 - **pr-description** - Generate concise PR descriptions from diffs
 - **pr-open** - Open GitHub PRs with auto-generated titles and descriptions

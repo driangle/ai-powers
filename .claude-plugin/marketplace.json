@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "PR workflow and commit skills",
-    "version": "0.0.9"
+    "version": "0.0.10"
   },
   "plugins": [
     {
@@ -15,11 +15,12 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/pr-description",
-        "./skills/pr-review",
-        "./skills/pr-stack",
-        "./skills/commit-msg",
-        "./skills/pr-open"
+        "./powers/commit",
+        "./powers/commit-msg",
+        "./powers/pr-open",
+        "./powers/pr-description",
+        "./powers/pr-review",
+        "./powers/pr-stack"
       ]
     },
     {
@@ -28,9 +29,9 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/audit",
-        "./skills/dead-code",
-        "./skills/test-audit"
+        "./powers/audit",
+        "./powers/dead-code",
+        "./powers/test-audit"
       ]
     },
     {
@@ -39,10 +40,10 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/refactor",
-        "./skills/migrate",
-        "./skills/triage-dependabot",
-        "./skills/setup-targets"
+        "./powers/refactor",
+        "./powers/migrate",
+        "./powers/triage-dependabot",
+        "./powers/setup-targets"
       ]
     },
     {
@@ -51,7 +52,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/release"
+        "./powers/release"
       ]
     },
     {
@@ -60,7 +61,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/spec-decompose"
+        "./powers/spec-decompose"
       ]
     },
     {
@@ -69,7 +70,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/work"
+        "./powers/work"
       ]
     }
   ]

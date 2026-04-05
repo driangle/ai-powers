@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "PR workflow and commit skills",
-    "version": "0.0.8"
+    "version": "0.0.9"
   },
   "plugins": [
     {
@@ -60,7 +60,8 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/spec-decompose"
+        "./skills/spec-decompose",
+        "./skills/work"
       ]
     }
   ]

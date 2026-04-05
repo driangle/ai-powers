@@ -32,3 +32,4 @@ Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`
 - **setup-targets** - Set up standardized build targets (compile, lint, test, build) per project, top-level check/check-lite, pre-commit hook, and CI workflow
 - **release** - Create versioned releases with automated version bumps, tagging, release notes, and GitHub release publishing
 - **spec-decompose** - Decompose specs, requirements, or design docs into actionable task files
+- **work** - Pick up the next task, execute it, verify it, mark it complete, and commit

@@ -18,12 +18,17 @@ Accepts a PR URL (e.g. `https://github.com/org/repo/pull/123`) or a PR number (f
 
 2. Read the full diff carefully. For large diffs, read persisted output files fully.
 
-3. Review for: bugs, missing error handling, security issues, performance problems, naming/readability, convention violations, lock file anomalies, unsafe casts/patterns.
+3. Write a clear explanation of the PR:
+   - What problem does this PR solve and why?
+   - What approach was taken — summarize the key changes across files
+   - Call out any notable design decisions or trade-offs
 
-4. Categorize each finding: **High**, **Medium**, **Low**, or **Nit**.
+4. Review for: bugs, missing error handling, security issues, performance problems, naming/readability, convention violations, lock file anomalies, unsafe casts/patterns.
+
+5. Categorize each finding: **High**, **Medium**, **Low**, or **Nit**.
 
 ## Output
 
 Print the review directly — do NOT post comments to the PR unless the user explicitly asks.
 
-Format: H2 title with PR name, one-line summary, then issues listed with severity, `file:line` reference, and concrete suggestion. End with a "Positives" section noting what was done well.
+Format: H2 title with PR name, then a **"What this PR does"** section explaining the changes (from step 3), followed by issues listed with severity, `file:line` reference, and concrete suggestion. End with a "Positives" section noting what was done well.

@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "PR workflow and commit skills",
-    "version": "0.0.15"
+    "version": "0.0.16"
   },
   "plugins": [
     {
@@ -33,6 +33,7 @@
         "./audit",
         "./audit-docs",
         "./dead-code",
+        "./oddities",
         "./test-audit"
       ]
     },

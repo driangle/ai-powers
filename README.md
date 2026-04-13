@@ -22,6 +22,7 @@ Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`
 - **audit** - Perform a comprehensive codebase audit covering security, privacy, data integrity, architecture, and code quality
 - **audit-docs** - Audit documentation coverage: discover CLI commands, APIs, config options, and features, then cross-reference against docs to find gaps and stale content
 - **dead-code** - Find dead code: unused exports, orphaned files, unreachable code paths, unused dependencies, and stale artifacts
+- **oddities** - Scan a scope of code (directory, module, branch diff) for unconventional, strange, questionable, or opaque things — latent bugs, unexpected complexity, inconsistencies, odd design, and library/API workarounds; produces a prioritized reading list, not a refactor plan
 - **test-audit** - Audit test suites for legitimacy: detect tautologies, over-mocking, trivially-passing assertions, and misleading coverage
 - **triage-dependabot** - Triage Dependabot alerts: group by package, find high-payoff upgrades and removal candidates, then plan a fix
 - **migrate** - Perform codebase migrations: upgrade dependencies, swap libraries, adopt new APIs or patterns

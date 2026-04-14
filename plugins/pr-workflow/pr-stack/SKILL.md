@@ -34,31 +34,69 @@ Format:
 git checkout <source-branch> -- path/to/file1.ts
 git checkout <source-branch> -- path/to/file2.ts
 
-# PR 2: <title> (depends on PR 1)
+# PR 2: <title>
 git checkout <source-branch> -- path/to/file3.ts
 ```
 
 Rules:
 - Every changed file appears in exactly one PR
-- Note dependencies between PRs
 - Include file count and line count per PR
+- Dependencies are expressed in the ASCII diagram below (not inline in titles)
 - End with a summary: total files, total lines, number of PRs
+
+### ASCII diagram of the PR graph
+
+After the plan, render an ASCII diagram of the DAG. A PR may have zero, one, or multiple parents. Place each PR **once**, under its **primary parent** (the branch it will be cut from). Annotate extra parents with `[also depends on PR X, PR Y]`. If any PR has multiple parents, add a **Dependencies** edge list below the tree; otherwise omit it.
+
+**Stacked** (linear chain):
+```
+main
+  └── PR 1: foundational types (4 files, 120 lines)
+        └── PR 2: API layer (8 files, 240 lines)
+              └── PR 3: UI wiring (12 files, 310 lines)
+```
+
+**Parallel** (independent off the same base):
+```
+main
+  ├── PR 1: config cleanup (3 files, 40 lines)
+  ├── PR 2: logging refactor (6 files, 180 lines)
+  └── PR 3: docs update (2 files, 30 lines)
+```
+
+**Diamond** (multi-parent):
+```
+main
+  └── PR 1: shared types (4 files, 120 lines)
+        ├── PR 2: API layer (8 files, 240 lines)
+        ├── PR 3: client SDK (6 files, 180 lines)
+        └── PR 4: integration wiring (10 files, 300 lines) [also depends on PR 2, PR 3]
+
+Dependencies:
+  PR 1 → PR 2
+  PR 1 → PR 3
+  PR 1 → PR 4
+  PR 2 → PR 4
+  PR 3 → PR 4
+```
 
 ## Step 4: Save and execute
 
 1. Save the plan to `~/.prs/<branch-name>.md` (replace `/` with `-`). Create `~/.prs/` if needed.
 
-2. For each PR in order:
-   - PR 1: branch from base. PR N: branch from PR N-1's branch.
+2. Process PRs in **topological order** (every PR comes after all its parents). For each PR:
+   - **No parents**: branch from the base (e.g. `main`).
+   - **One parent**: branch from that parent's branch.
+   - **Multiple parents**: branch from the primary parent, then `git merge` each additional parent's branch into it before staging files. If a merge conflicts, stop and surface the conflict — do not auto-resolve.
    - `git checkout <source-branch> -- <files...>` then `git add <files...>` (stage by name, never `git add -A`)
    - Commit with the PR title
    - Run type-check/lint for affected projects. If it fails, restructure the plan to fix the issue before continuing.
 
-3. Branch naming: `<source-branch>-pr-1`, `<source-branch>-pr-2`, etc.
+3. Branch naming: `<source-branch>-pr-1`, `<source-branch>-pr-2`, etc. (numbering follows the topological order used above).
 
 4. After all branches are created, switch back to the source branch and list the PR branches.
 
-5. Ask if the user wants to push and open PRs. **Never force-push. Never push to the main/master branch.** For stacked PRs, set PR N's base to PR N-1's branch. Respect `PULL_REQUEST_TEMPLATE.md` if one exists.
+5. Ask if the user wants to push and open PRs. **Never force-push. Never push to the main/master branch.** Set each PR's GitHub base to its **primary parent's branch** (GitHub only supports a single base). For PRs with multiple parents, note the additional dependencies in the PR description so reviewers know the full merge order. Respect `PULL_REQUEST_TEMPLATE.md` if one exists.
 
 ## Edge cases
 

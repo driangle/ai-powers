@@ -102,11 +102,17 @@ Dependencies:
   PR 3 → PR 4
 ```
 
-## Step 4: Save and execute
+## Step 4: Save the plan and confirm
 
 1. Save the plan to `./.prs/<branch-name>.md` (repo-local; replace `/` with `-` in the branch name). Create `./.prs/` if needed. This file is the running state log — update it after every step below.
 
-2. Process PRs in **topological order** (every PR comes after all its parents). For each PR:
+2. Present the plan to the user and **stop for confirmation before creating any branches**. Show the grouping, the ASCII diagram, and the total counts. Ask explicitly: "Proceed with creating these branches?" Do not run any `git checkout -b`, `git checkout -- <files>`, or `git commit` until the user confirms. If the user asks for adjustments, revise the plan, save, and ask again.
+
+## Step 5: Create branches
+
+Only run after the user confirms Step 4.
+
+1. Process PRs in **topological order** (every PR comes after all its parents). For each PR:
    - **No parents**: branch from the base (e.g. `main`).
    - **One parent**: branch from that parent's branch.
    - **Multiple parents**: branch from the primary parent, then `git merge` each additional parent's branch into it before staging files. If a merge conflicts, stop and surface the conflict — do not auto-resolve.
@@ -115,13 +121,21 @@ Dependencies:
    - Run type-check/lint for affected projects. If it fails, restructure the plan to fix the issue before continuing.
    - **Update the Status table in `./.prs/<branch-name>.md`** after each state change for this PR: set Status (`branch created` → `pushed` → `draft opened`/`opened`), fill in Commit (short SHA), typeCheck (`✓`/`✗`), and URL once available. Save after each update — do not batch until the end.
 
-3. Branch naming: `<source-branch>-pr-1`, `<source-branch>-pr-2`, etc. (numbering follows the topological order used above).
+2. Branch naming: `<source-branch>-pr-1`, `<source-branch>-pr-2`, etc. (numbering follows the topological order used above).
 
-4. After all branches are created, switch back to the source branch and list the PR branches.
+3. After all branches are created, switch back to the source branch and list the PR branches.
 
-5. Ask if the user wants to push and open PRs. **Never force-push. Never push to the main/master branch.** Set each PR's GitHub base to its **primary parent's branch** (GitHub only supports a single base). For PRs with multiple parents, note the additional dependencies in the PR description so reviewers know the full merge order. Respect `PULL_REQUEST_TEMPLATE.md` if one exists. As each PR is pushed and opened, update its row in the Status table (Status + URL) and save the file.
+## Step 6: Confirm before opening PRs
 
-6. On failure (merge conflict, type-check failure, push rejected, etc.): set that PR's Status to `failed`, leave a short note in the file explaining what broke, save, and surface the failure to the user before moving on.
+After branches are created, **stop and ask the user to confirm before pushing or opening any PRs**. Summarize what will be pushed (branches + target bases) and ask explicitly: "Push these branches and open PRs?" Do not run `git push` or `gh pr create` until the user confirms.
+
+## Step 7: Push and open PRs
+
+Only run after the user confirms Step 6.
+
+1. **Never force-push. Never push to the main/master branch.** Set each PR's GitHub base to its **primary parent's branch** (GitHub only supports a single base). For PRs with multiple parents, note the additional dependencies in the PR description so reviewers know the full merge order. Respect `PULL_REQUEST_TEMPLATE.md` if one exists. As each PR is pushed and opened, update its row in the Status table (Status + URL) and save the file.
+
+2. On failure (merge conflict, type-check failure, push rejected, etc.): set that PR's Status to `failed`, leave a short note in the file explaining what broke, save, and surface the failure to the user before moving on.
 
 ## Edge cases
 

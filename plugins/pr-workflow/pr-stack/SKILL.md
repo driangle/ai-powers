@@ -44,6 +44,28 @@ Rules:
 - Dependencies are expressed in the ASCII diagram below (not inline in titles)
 - End with a summary: total files, total lines, number of PRs
 
+### Status table
+
+Include a **Status** section in the plan file with a markdown table tracking per-PR state. This table is the source of truth for progress and must be kept up-to-date as PRs move through the workflow.
+
+Columns:
+- **PR** — PR number (matches the plan above)
+- **Status** — one of: `pending`, `branch created`, `pushed`, `draft opened`, `opened`, `merged`, `failed`
+- **URL** — GitHub PR URL, or `—` if not yet opened
+- **Branch** — branch name (always filled in up-front from the plan)
+- **Commit** — short commit SHA on that branch, or `—`
+- **typeCheck** — `✓` (passed), `✗` (failed), or `—` (not yet run)
+
+Initial table (all PRs start as `pending`):
+```
+## Status
+
+| PR  | Status  | URL | Branch                      | Commit | typeCheck |
+| --- | ------- | --- | --------------------------- | ------ | --------- |
+| 1   | pending | —   | `<source-branch>-pr-1`      | —      | —         |
+| 2   | pending | —   | `<source-branch>-pr-2`      | —      | —         |
+```
+
 ### ASCII diagram of the PR graph
 
 After the plan, render an ASCII diagram of the DAG. A PR may have zero, one, or multiple parents. Place each PR **once**, under its **primary parent** (the branch it will be cut from). Annotate extra parents with `[also depends on PR X, PR Y]`. If any PR has multiple parents, add a **Dependencies** edge list below the tree; otherwise omit it.
@@ -82,7 +104,7 @@ Dependencies:
 
 ## Step 4: Save and execute
 
-1. Save the plan to `~/.prs/<branch-name>.md` (replace `/` with `-`). Create `~/.prs/` if needed.
+1. Save the plan to `./.prs/<branch-name>.md` (repo-local; replace `/` with `-` in the branch name). Create `./.prs/` if needed. This file is the running state log — update it after every step below.
 
 2. Process PRs in **topological order** (every PR comes after all its parents). For each PR:
    - **No parents**: branch from the base (e.g. `main`).
@@ -91,12 +113,15 @@ Dependencies:
    - `git checkout <source-branch> -- <files...>` then `git add <files...>` (stage by name, never `git add -A`)
    - Commit with the PR title
    - Run type-check/lint for affected projects. If it fails, restructure the plan to fix the issue before continuing.
+   - **Update the Status table in `./.prs/<branch-name>.md`** after each state change for this PR: set Status (`branch created` → `pushed` → `draft opened`/`opened`), fill in Commit (short SHA), typeCheck (`✓`/`✗`), and URL once available. Save after each update — do not batch until the end.
 
 3. Branch naming: `<source-branch>-pr-1`, `<source-branch>-pr-2`, etc. (numbering follows the topological order used above).
 
 4. After all branches are created, switch back to the source branch and list the PR branches.
 
-5. Ask if the user wants to push and open PRs. **Never force-push. Never push to the main/master branch.** Set each PR's GitHub base to its **primary parent's branch** (GitHub only supports a single base). For PRs with multiple parents, note the additional dependencies in the PR description so reviewers know the full merge order. Respect `PULL_REQUEST_TEMPLATE.md` if one exists.
+5. Ask if the user wants to push and open PRs. **Never force-push. Never push to the main/master branch.** Set each PR's GitHub base to its **primary parent's branch** (GitHub only supports a single base). For PRs with multiple parents, note the additional dependencies in the PR description so reviewers know the full merge order. Respect `PULL_REQUEST_TEMPLATE.md` if one exists. As each PR is pushed and opened, update its row in the Status table (Status + URL) and save the file.
+
+6. On failure (merge conflict, type-check failure, push rejected, etc.): set that PR's Status to `failed`, leave a short note in the file explaining what broke, save, and surface the failure to the user before moving on.
 
 ## Edge cases
 

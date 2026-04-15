@@ -26,4 +26,4 @@ allowed-tools: Bash
 - Use bullet points (`-`), not numbered lists.
 - Keep bullet points concise — one line each when possible.
 - Do NOT use bold, italic, or other inline formatting beyond backticks.
-- Output raw markdown directly — do not wrap it in a code fence.
+- Wrap the entire output inside a fenced code block (triple backticks with `markdown` language tag) so the terminal displays raw markdown that can be copied directly into a GitHub PR description.

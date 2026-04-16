@@ -1,29 +1,43 @@
 #!/usr/bin/env python3
 """Fetch open PRs matching filters, bucket them, emit JSON for a reviewer report.
 
-Filters (all AND-combined, at least one of team/author/repos required):
-  --team       Only PRs where this team is a requested reviewer (org/team).
-  --author     Only PRs by this author.
+Filters (at least one of teams/authors/repos required):
+  --teams      Comma-separated team slugs. A PR matches if ANY of these teams
+               is a requested reviewer.
+  --authors    Comma-separated GitHub usernames. A PR matches if its author is
+               in the list.
   --repos      Comma-separated repo names (org inferred from --org).
+
+teams and authors are OR-combined within each list; across lists they AND —
+the skill scopes to "PRs any listed team is reviewing AND authored by any
+listed author". Repos scope further on top.
 
 Drafts and bot-authored PRs are always excluded.
 
 Output: JSON on stdout with PRs grouped into 4 mutually-exclusive buckets
 (first match wins, in this precedence):
-  1. needs_attention   — failing CI, merge conflict, or stale (>= --stale-hours)
+  1. needs_attention   — failing CI, merge conflict, stale (>= --stale-hours since
+                        last activity), or old (>= --max-age-days since opened)
   2. ready_to_merge    — approved, CI green (or none), no conflict
   3. in_discussion     — changes requested
   4. awaiting_review   — default bucket for everything else
+
+"stale" and "old" are intentionally separate signals: a PR can be young but
+abandoned (stale, not old), or long-running but with recent activity (old, not
+stale). Either is worth a reviewer's attention.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 from datetime import datetime, timezone
 
+
+EXPECTED_GH_MAJOR = 2
 
 PR_VIEW_FIELDS = (
     "number,title,url,author,isDraft,createdAt,updatedAt,additions,deletions,"
@@ -33,6 +47,39 @@ PR_VIEW_FIELDS = (
 SEARCH_FIELDS = "url,repository,isDraft,author"
 
 BOT_LOGINS = {"dependabot", "renovate", "renovate-bot", "github-actions"}
+
+
+def check_gh_version() -> None:
+    """Abort early if `gh` is missing or its major version isn't what we built against.
+
+    Flags and JSON fields used here (e.g. `--review-requested`, `statusCheckRollup`)
+    can shift between major releases, so we refuse to run on an unknown major.
+    """
+    try:
+        result = subprocess.run(
+            ["gh", "--version"], capture_output=True, text=True, check=False
+        )
+    except FileNotFoundError:
+        sys.stderr.write("gh CLI not found on PATH. Install from https://cli.github.com/.\n")
+        sys.exit(1)
+
+    if result.returncode != 0:
+        sys.stderr.write(f"`gh --version` failed (exit {result.returncode}):\n{result.stderr}")
+        sys.exit(1)
+
+    match = re.search(r"gh version (\d+)\.(\d+)\.(\d+)", result.stdout)
+    if not match:
+        sys.stderr.write(f"Could not parse gh version from:\n{result.stdout}")
+        sys.exit(1)
+
+    major = int(match.group(1))
+    if major != EXPECTED_GH_MAJOR:
+        version = ".".join(match.group(i) for i in (1, 2, 3))
+        sys.stderr.write(
+            f"Unsupported gh major version: got {version}, expected {EXPECTED_GH_MAJOR}.x. "
+            f"Update this script after verifying the flags and JSON fields still work.\n"
+        )
+        sys.exit(1)
 
 
 def run_gh(args: list[str]) -> list | dict:
@@ -51,7 +98,7 @@ def run_gh(args: list[str]) -> list | dict:
 def search_prs(org: str, team: str | None, author: str | None, repos: list[str] | None) -> list[dict]:
     args = ["search", "prs", "--state", "open", "--limit", "1000", "--json", SEARCH_FIELDS]
     if team:
-        args += ["--team-review-requested", f"{org}/{team}"]
+        args += ["--review-requested", f"{org}/{team}"]
     if author:
         args += ["--author", author]
     if repos:
@@ -66,13 +113,15 @@ def fetch_pr_details(url: str) -> dict:
     return run_gh(["pr", "view", url, "--json", PR_VIEW_FIELDS])
 
 
-def is_bot(author: dict | None) -> bool:
+def is_bot(author: dict | None, extra_bots: set[str]) -> bool:
     if not author:
         return False
     if author.get("is_bot") or author.get("type") == "Bot":
         return True
     login = (author.get("login") or "").lower()
-    return login.endswith("[bot]") or login in BOT_LOGINS
+    if login.endswith("[bot]") or login in BOT_LOGINS:
+        return True
+    return login in extra_bots
 
 
 def ci_status(rollup: list | None) -> str:
@@ -99,21 +148,28 @@ def hours_since(iso_str: str, now: datetime) -> float:
     return (now - dt).total_seconds() / 3600.0
 
 
-def bucket_for(pr: dict, stale_hours: float, now: datetime) -> tuple[str, list[str]]:
+def bucket_for(pr: dict, stale_hours: float, max_age_days: float, now: datetime) -> tuple[str, list[str]]:
     ci = ci_status(pr.get("statusCheckRollup"))
     mergeable = pr.get("mergeable")  # MERGEABLE | CONFLICTING | UNKNOWN
     decision = pr.get("reviewDecision")  # APPROVED | CHANGES_REQUESTED | REVIEW_REQUIRED | ''
-    age_h = hours_since(pr["updatedAt"], now)
+    idle_h = hours_since(pr["updatedAt"], now)
+    age_h = hours_since(pr["createdAt"], now)
 
     problems: list[str] = []
     if ci == "failure":
         problems.append("CI failing")
     if mergeable == "CONFLICTING":
         problems.append("merge conflict")
-    if age_h >= stale_hours:
-        problems.append(f"stale ({_fmt_age(age_h)})")
+    if idle_h >= stale_hours:
+        problems.append(f"stale {_fmt_age(idle_h)}")
+    age_triggered = age_h >= max_age_days * 24
 
-    if problems:
+    if problems or age_triggered:
+        # Age alone can land a PR here; if nothing else fires, surface `old Nd`
+        # so the reader sees *why* it was flagged. Otherwise the leading
+        # `open Nd` in the rendered line already conveys it.
+        if age_triggered and not problems:
+            problems.append(f"old {_fmt_age(age_h)}")
         return "needs_attention", problems
 
     if decision == "APPROVED" and ci in ("success", "none") and mergeable != "CONFLICTING":
@@ -167,26 +223,56 @@ def build_entry(pr: dict, repo_full: str, bucket_name: str, reasons: list[str], 
     }
 
 
+def _split_csv(value: str | None) -> list[str]:
+    if not value:
+        return []
+    return [v.strip() for v in value.split(",") if v.strip()]
+
+
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--org", required=True, help="GitHub organization (e.g. 'acme')")
-    p.add_argument("--team", default=None, help="Team slug (without org prefix). Filters to PRs where this team is a requested reviewer.")
-    p.add_argument("--author", default=None, help="GitHub username. Filters to PRs by this author.")
+    p.add_argument("--teams", default=None, help="Comma-separated team slugs (without org prefix). A PR matches if ANY of these teams is a requested reviewer.")
+    p.add_argument("--authors", default=None, help="Comma-separated GitHub usernames. A PR matches if its author is in this list.")
     p.add_argument("--repos", default=None, help="Comma-separated repo names to restrict the search to.")
     p.add_argument("--stale-hours", type=float, default=24.0, help="Hours since last update to consider stale (default: 24).")
+    p.add_argument("--max-age-days", type=float, default=7.0, help="Days since opened before a PR is flagged as too old (default: 7).")
+    p.add_argument(
+        "--extra-bots",
+        default=None,
+        help="Comma-separated additional GitHub logins to treat as bots (case-insensitive). "
+        "Use this for machine accounts that GitHub doesn't mark as bots (e.g. org automation users).",
+    )
     return p.parse_args()
 
 
 def main() -> int:
     args = parse_args()
-    if not (args.team or args.author or args.repos):
-        sys.stderr.write("Error: provide at least one of --team, --author, or --repos.\n")
+    teams = _split_csv(args.teams)
+    authors = _split_csv(args.authors)
+    repos = _split_csv(args.repos) or None
+
+    if not (teams or authors or repos):
+        sys.stderr.write("Error: provide at least one of --teams, --authors, or --repos.\n")
         return 2
 
-    repos = [r.strip() for r in args.repos.split(",") if r.strip()] if args.repos else None
+    check_gh_version()
+
+    extra_bots = {b.lower() for b in _split_csv(args.extra_bots)}
     now = datetime.now(timezone.utc)
 
-    search_results = search_prs(args.org, args.team, args.author, repos)
+    # gh search prs has single-valued --review-requested and --author, so
+    # we run one query per (team × author) combination and dedupe by URL.
+    # None on either axis means "don't apply that filter" for the query.
+    team_axis: list[str | None] = list(teams) if teams else [None]
+    author_axis: list[str | None] = list(authors) if authors else [None]
+
+    merged: dict[str, dict] = {}
+    for team in team_axis:
+        for author in author_axis:
+            for r in search_prs(args.org, team, author, repos):
+                merged[r["url"]] = r
+    search_results = list(merged.values())
 
     buckets: dict[str, list[dict]] = {
         "needs_attention": [],
@@ -201,7 +287,7 @@ def main() -> int:
         if result.get("isDraft"):
             skipped_drafts += 1
             continue
-        if is_bot(result.get("author")):
+        if is_bot(result.get("author"), extra_bots):
             skipped_bots += 1
             continue
 
@@ -210,11 +296,11 @@ def main() -> int:
         if pr.get("isDraft"):
             skipped_drafts += 1
             continue
-        if is_bot(pr.get("author")):
+        if is_bot(pr.get("author"), extra_bots):
             skipped_bots += 1
             continue
 
-        name, reasons = bucket_for(pr, args.stale_hours, now)
+        name, reasons = bucket_for(pr, args.stale_hours, args.max_age_days, now)
         repo_full = (result.get("repository") or {}).get("nameWithOwner", "")
         buckets[name].append(build_entry(pr, repo_full, name, reasons, now))
 
@@ -224,10 +310,11 @@ def main() -> int:
 
     output = {
         "org": args.org,
-        "team": args.team,
-        "author": args.author,
+        "teams": teams,
+        "authors": authors,
         "repos": repos,
         "stale_hours": args.stale_hours,
+        "max_age_days": args.max_age_days,
         "generated_at": now.isoformat(),
         "total": sum(len(v) for v in buckets.values()),
         "counts": {k: len(v) for k, v in buckets.items()},

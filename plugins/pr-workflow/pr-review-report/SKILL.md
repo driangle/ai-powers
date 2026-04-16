@@ -13,12 +13,16 @@ Pulls open PRs from GitHub via the `gh` CLI and formats them into a Slack-ready 
 Collect these from the user (or infer from the conversation):
 
 - `org` (**required**) — GitHub organization.
-- `team` (optional) — team slug, without the `org/` prefix. Filters to PRs where this team is a requested reviewer.
-- `author` (optional) — GitHub username. Filters to PRs by this author.
-- `repos` (optional) — comma-separated list of repo names (no org prefix). Restricts the search.
-- `stale_hours` (optional, default `24`) — hours since last activity before a PR is flagged as stale.
+- `teams` (optional) — comma-separated team slugs (no `org/` prefix). A PR matches if **any** of these teams is a requested reviewer.
+- `authors` (optional) — comma-separated GitHub usernames. A PR matches if its author is **any** of these users.
+- `repos` (optional) — comma-separated repo names (no org prefix). Restricts the search to these repos.
+- `stale_hours` (optional, default `24`) — hours since last activity before a PR is flagged as stale (idle-age signal).
+- `max_age_days` (optional, default `7`) — days since the PR was opened before it's flagged as too old (open-age signal). Independent of activity: catches long-running PRs even if someone commented recently.
+- `extra_bots` (optional) — comma-separated GitHub logins to treat as bots. Use this for machine accounts GitHub doesn't flag (e.g. an internal automation user that opens dependency PRs). Matched case-insensitively.
 
-**At least one of `team`, `author`, or `repos` must be provided** — the script errors out otherwise.
+**At least one of `teams`, `authors`, or `repos` must be provided** — the script errors out otherwise.
+
+Filter semantics: within a list values are OR'd (any team OR any author). Across lists they AND (must be reviewed by one of those teams AND authored by one of those authors AND in one of those repos). Repos further restrict the search.
 
 If any required input is missing or ambiguous, ask the user before running the script. Don't guess org/team slugs.
 
@@ -27,10 +31,12 @@ If any required input is missing or ambiguous, ask the user before running the s
 ```bash
 python3 "${CLAUDE_PLUGIN_ROOT}/pr-review-report/scripts/fetch_prs.py" \
   --org <org> \
-  [--team <team-slug>] \
-  [--author <username>] \
+  [--teams team1,team2] \
+  [--authors user1,user2] \
   [--repos repo1,repo2,repo3] \
-  [--stale-hours <N>]
+  [--stale-hours <N>] \
+  [--max-age-days <N>] \
+  [--extra-bots login1,login2]
 ```
 
 The script prints a JSON blob on stdout with this shape:
@@ -38,8 +44,8 @@ The script prints a JSON blob on stdout with this shape:
 ```json
 {
   "org": "acme",
-  "team": "platform",
-  "author": null,
+  "teams": ["platform"],
+  "authors": [],
   "repos": ["api", "web"],
   "stale_hours": 24,
   "generated_at": "2026-04-16T...",
@@ -61,34 +67,37 @@ Format the JSON into Slack mrkdwn following the template below. Print the result
 
 ### Template
 
+Every bullet uses the same shape: `open <age>` first (always labeled — so the reader never has to guess what a bare number means), then bucket-specific fields.
+
 ```
 *PR review report — <team or author or "repos">* · <total> open · _<generated date, human-readable>_
 
 :fire: *Needs attention* (<count>)
-• <<url>|<repo>#<number>> — <title> _by @<author>_ · <age> · <reasons joined with ", ">
+• <<url>|<repo>#<number>> — <title> _by @<author>_ · open <age> · <reasons joined with ", ">
 ...
 
 :white_check_mark: *Ready to merge* (<count>)
-• <<url>|<repo>#<number>> — <title> _by @<author>_ · approved by @<a>, @<b>
+• <<url>|<repo>#<number>> — <title> _by @<author>_ · open <age> · approved by @<a>, @<b>
 ...
 
 :speech_balloon: *In discussion* (<count>)
-• <<url>|<repo>#<number>> — <title> _by @<author>_ · <reasons>
+• <<url>|<repo>#<number>> — <title> _by @<author>_ · open <age> · <reasons>
 ...
 
 :eyes: *Awaiting review* (<count>)
-• <<url>|<repo>#<number>> — <title> _by @<author>_ · <age> · +<additions>/-<deletions>
+• <<url>|<repo>#<number>> — <title> _by @<author>_ · open <age> · +<additions>/-<deletions>
 ...
 ```
 
 ### Rendering rules
 
 - **Omit empty buckets entirely** — don't print a heading for an empty bucket.
-- **Header line** — use the most specific label you have. If a team is set, use the team name; if only author, use `@<author>`; if only repos, use `repos: <list>`. Combine when both team and author are given: `team <team> / @<author>`.
-- **Age** — use the `age_hours` field (hours since the PR was opened). Format as `<N>h` under 24 hours, otherwise `<N>d`. Round sensibly.
+- **Header line** — describe the scope from the filters. Single team → `team <name>`; multiple teams → `teams <t1>, <t2>`. Single author → `@<user>`; multiple authors → `@<a>, @<b>`. Combine non-empty pieces with ` / ` (e.g. `teams choco-ai, platform / @ebukaume`). If only repos are set, fall back to `repos: <list>`.
+- **Age** — prefix with `open` and format `age_hours` (hours since opened) as `<N>h` under 24 hours, otherwise `<N>d`. Round sensibly.
 - **Links** — use Slack's `<url|text>` syntax. The link text should be `<repo-short-name>#<number>` (strip the `org/` prefix from `repo` for brevity).
 - **Sizes** — only include `+additions/-deletions` in the *Awaiting review* bucket. Elsewhere it's noise.
-- **Reasons** — for *Needs attention* and *In discussion*, join the `reasons` array with `, `. For *Ready to merge*, list approvers as `approved by @a, @b`; if approvers is empty, write `approved`.
+- **Reasons** — the script emits already-labeled reasons (`CI failing`, `merge conflict`, `stale <Nd>`, `old <Nd>`, `changes requested`). Join them with `, ` and drop them in verbatim; don't reformat. The leading `open <age>` already covers open-age, so the script only emits `old <Nd>` when age is the *sole* trigger — otherwise it'd be redundant.
+- **Approvers** (*Ready to merge*) — `approved by @a, @b`; if the approvers list is empty, write just `approved`.
 - **Footer** — if `skipped.drafts` or `skipped.bots` are non-zero, add a final italic line: `_Skipped: <N> drafts, <M> bot PRs_`. Omit when both are zero.
 - **No truncation** — print every PR, even if the message is long. The user asked for one large message.
 - **Ordering** — preserve the script's ordering within each bucket (oldest PR first).
@@ -96,21 +105,27 @@ Format the JSON into Slack mrkdwn following the template below. Print the result
 ### Example output
 
 ```
-*PR review report — platform* · 5 open · _Apr 16, 2026_
+*PR review report — team platform* · 5 open · _Apr 16, 2026_
 
-:fire: *Needs attention* (2)
-• <https://github.com/acme/api/pull/312|api#312> — Refactor auth middleware _by @jess_ · 4d · CI failing, stale (4d)
-• <https://github.com/acme/web/pull/188|web#188> — Upgrade React to 19 _by @tom_ · 2d · merge conflict
+:fire: *Needs attention* (3)
+• <https://github.com/acme/api/pull/300|api#300> — Refactor token cache _by @jess_ · open 30d · stale 15d
+• <https://github.com/acme/api/pull/312|api#312> — Harden auth middleware _by @jess_ · open 4d · CI failing, stale 4d
+• <https://github.com/acme/web/pull/188|web#188> — Long-running React 19 upgrade _by @tom_ · open 12d · old 12d
 
 :white_check_mark: *Ready to merge* (1)
-• <https://github.com/acme/api/pull/320|api#320> — Add rate-limit headers _by @sam_ · approved by @jess, @tom
+• <https://github.com/acme/api/pull/320|api#320> — Add rate-limit headers _by @sam_ · open 2d · approved by @jess, @tom
 
 :eyes: *Awaiting review* (2)
-• <https://github.com/acme/web/pull/205|web#205> — Fix hydration warning on /dashboard _by @lee_ · 1d · +42/-18
-• <https://github.com/acme/api/pull/325|api#325> — Add /health endpoint _by @sam_ · 6h · +80/-3
+• <https://github.com/acme/web/pull/205|web#205> — Fix hydration warning on /dashboard _by @lee_ · open 1d · +42/-18
+• <https://github.com/acme/api/pull/325|api#325> — Add /health endpoint _by @sam_ · open 6h · +80/-3
 
 _Skipped: 3 drafts, 4 bot PRs_
 ```
+
+Notice how the three needs-attention PRs each tell a different story at a glance:
+- `#300`: old *and* gone quiet ("open 30d · stale 15d")
+- `#312`: young, but actively broken ("open 4d · CI failing, stale 4d")
+- `#188`: long-running but still being worked on ("open 12d · old 12d") — age was the sole trigger, so the script adds `old 12d` explicitly so the reader sees why it was flagged.
 
 ## Edge cases
 

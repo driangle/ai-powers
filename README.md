@@ -33,6 +33,7 @@ Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`
 - **pr-description** - Generate concise PR descriptions from diffs
 - **pr-open** - Open GitHub PRs with auto-generated titles and descriptions
 - **pr-review** - Review GitHub PRs and post author-addressed comments
+- **pr-review-report** - Generate a Slack-friendly triage report of open PRs for a team, author, or set of repos
 - **pr-stack** - Split large feature branches into smaller, stacked PRs
 - **setup-targets** - Set up standardized build targets (compile, lint, test, build) per project, top-level check/check-lite, pre-commit hook, and CI workflow
 - **release** - Create versioned releases with automated version bumps, tagging, release notes, and GitHub release publishing

@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "PR workflow and commit skills",
-    "version": "0.0.22"
+    "version": "0.0.23"
   },
   "plugins": [
     {
@@ -20,6 +20,7 @@
         "./pr-open",
         "./pr-description",
         "./pr-review",
+        "./pr-review-report",
         "./pr-stack"
       ]
     },

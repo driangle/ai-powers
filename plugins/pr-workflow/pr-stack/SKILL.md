@@ -127,13 +127,13 @@ Only run after the user confirms Step 4.
 
 ## Step 6: Confirm before opening PRs
 
-After branches are created, **stop and ask the user to confirm before pushing or opening any PRs**. Summarize what will be pushed (branches + target bases) and ask explicitly: "Push these branches and open PRs?" Do not run `git push` or `gh pr create` until the user confirms.
+After branches are created, **stop and ask the user to confirm before pushing or opening any PRs**. Summarize what will be pushed (branches + target bases), note that PRs will be opened as **drafts by default**, and ask explicitly: "Push these branches and open PRs as drafts?" Do not run `git push` or `gh pr create` until the user confirms. If the user explicitly asks for ready-for-review PRs, skip the `--draft` flag in Step 7.
 
 ## Step 7: Push and open PRs
 
 Only run after the user confirms Step 6.
 
-1. **Never force-push. Never push to the main/master branch.** Set each PR's GitHub base to its **primary parent's branch** (GitHub only supports a single base). For PRs with multiple parents, note the additional dependencies in the PR description so reviewers know the full merge order. Respect `PULL_REQUEST_TEMPLATE.md` if one exists. As each PR is pushed and opened, update its row in the Status table (Status + URL) and save the file.
+1. **Never force-push. Never push to the main/master branch.** Set each PR's GitHub base to its **primary parent's branch** (GitHub only supports a single base). For PRs with multiple parents, note the additional dependencies in the PR description so reviewers know the full merge order. Respect `PULL_REQUEST_TEMPLATE.md` if one exists. **Always open PRs as drafts by default** — pass `--draft` to `gh pr create` unless the user explicitly requested non-draft/ready-for-review PRs. As each PR is pushed and opened, update its row in the Status table (Status + URL) and save the file.
 
 2. On failure (merge conflict, type-check failure, push rejected, etc.): set that PR's Status to `failed`, leave a short note in the file explaining what broke, save, and surface the failure to the user before moving on.
 

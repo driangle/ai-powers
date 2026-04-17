@@ -137,6 +137,10 @@ Only run after the user confirms Step 6.
 
 2. On failure (merge conflict, type-check failure, push rejected, etc.): set that PR's Status to `failed`, leave a short note in the file explaining what broke, save, and surface the failure to the user before moving on.
 
+## Step 8: Updating an already-open PR
+
+When the user applies further changes to a PR that's already been opened (e.g. review feedback, fixes), **do not commit or push, and do not ask to**. Leave the changes in the working tree — the user will decide when and how to commit and push. Only act on commit/push if the user explicitly requests it.
+
 ## Edge cases
 
 - **< 20 files**: Present the plan anyway but note splitting isn't necessary.

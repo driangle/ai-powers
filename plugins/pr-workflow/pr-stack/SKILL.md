@@ -104,7 +104,7 @@ Dependencies:
 
 ## Step 4: Save the plan and confirm
 
-1. Save the plan to `./.prs/<branch-name>.md` (repo-local; replace `/` with `-` in the branch name). Create `./.prs/` if needed. This file is the running state log — update it after every step below.
+1. Save the plan to `~/.prs/<branch-name>.md` (repo-local; replace `/` with `-` in the branch name). Create `~/.prs/` if needed. This file is the running state log — update it after every step below.
 
 2. Present the plan to the user and **stop for confirmation before creating any branches**. Show the grouping, the ASCII diagram, and the total counts. Ask explicitly: "Proceed with creating these branches?" Do not run any `git checkout -b`, `git checkout -- <files>`, or `git commit` until the user confirms. If the user asks for adjustments, revise the plan, save, and ask again.
 
@@ -119,7 +119,7 @@ Only run after the user confirms Step 4.
    - `git checkout <source-branch> -- <files...>` then `git add <files...>` (stage by name, never `git add -A`)
    - Commit with the PR title
    - Run type-check/lint for affected projects. If it fails, restructure the plan to fix the issue before continuing.
-   - **Update the Status table in `./.prs/<branch-name>.md`** after each state change for this PR: set Status (`branch created` → `pushed` → `draft opened`/`opened`), fill in Commit (short SHA), typeCheck (`✓`/`✗`), and URL once available. Save after each update — do not batch until the end.
+   - **Update the Status table in `~/.prs/<branch-name>.md`** after each state change for this PR: set Status (`branch created` → `pushed` → `draft opened`/`opened`), fill in Commit (short SHA), typeCheck (`✓`/`✗`), and URL once available. Save after each update — do not batch until the end.
 
 2. Branch naming: `<source-branch>-pr-1`, `<source-branch>-pr-2`, etc. (numbering follows the topological order used above).
 

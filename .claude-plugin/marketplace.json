@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "PR workflow and commit skills",
-    "version": "0.0.27"
+    "version": "0.0.28"
   },
   "plugins": [
     {
@@ -21,6 +21,7 @@
         "./pr-description",
         "./pr-review",
         "./pr-review-report",
+        "./pr-triage",
         "./pr-stack"
       ]
     },
@@ -55,28 +56,21 @@
       "description": "Versioned releases with automated version bumps, tagging, release notes, and GitHub release publishing",
       "source": "./plugins/release",
       "strict": false,
-      "skills": [
-        "./release"
-      ]
+      "skills": ["./release"]
     },
     {
       "name": "planning",
       "description": "Pre-coding project planning: decompose specs, requirements, and design docs into actionable task files",
       "source": "./plugins/planning",
       "strict": false,
-      "skills": [
-        "./spec-decompose"
-      ]
+      "skills": ["./spec-decompose"]
     },
     {
       "name": "execution",
       "description": "End-to-end task execution: pick up tasks, implement, verify, and commit in one step",
       "source": "./plugins/execution",
       "strict": false,
-      "skills": [
-        "./fix-feedback",
-        "./work"
-      ]
+      "skills": ["./fix-feedback", "./work"]
     }
   ]
 }

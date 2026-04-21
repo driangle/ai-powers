@@ -17,7 +17,7 @@ allowed-tools: Bash
 
 ## Changes
 
-<Grouped list of specific changes. Group by area/concern when there are many changes. Use sub-bullets for details.>
+<Flat list of 4–7 bullets describing behavior/outcome, not files. One line each.>
 ```
 
 ### Formatting rules
@@ -25,5 +25,9 @@ allowed-tools: Bash
 - Wrap code identifiers (function names, class names, filenames, variable names) in backticks.
 - Use bullet points (`-`), not numbered lists.
 - Keep bullet points concise — one line each when possible.
+- Cap Summary at 3 bullets and Changes at ~7 bullets. If you need more, you're narrating instead of summarizing.
+- Describe outcomes, not files. Don't list every added file, resolver, mapper, or test case — group them ("Add resolvers X and Y", "Add integration tests covering …").
+- Avoid sub-bullets. Use them only when a bullet genuinely has 2+ distinct sub-concerns that a reviewer must see separately.
+- Omit mechanical housekeeping (lockfile updates, worklogs, task specs, trivial imports) unless reviewer-relevant. Fold changesets/dep bumps into one line.
 - Do NOT use bold, italic, or other inline formatting beyond backticks.
 - Wrap the entire output inside a fenced code block (triple backticks with `markdown` language tag) so the terminal displays raw markdown that can be copied directly into a GitHub PR description.

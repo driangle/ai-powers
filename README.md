@@ -25,7 +25,8 @@ Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`
 - **pr-open** - Open GitHub PRs with auto-generated titles and descriptions
 - **pr-description** - Generate concise PR descriptions from diffs
 - **pr-review** - Review GitHub PRs and post author-addressed comments
-- **pr-review-report** - Generate a Slack-friendly triage report of open PRs for a team, author, or set of repos
+- **pr-review-report** - Generate a Slack-friendly triage report of open PRs for a team, author, or set of repos (script-backed, deterministic)
+- **pr-triage** - Pure-prompt variant of pr-review-report: same Slack-ready triage output driven by `gh` calls and prompt-embedded bucketing rules, no helper script
 - **pr-stack** - Split large feature branches into smaller, stacked PRs
 
 ### codebase-analysis

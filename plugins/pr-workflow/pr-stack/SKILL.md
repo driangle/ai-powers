@@ -133,7 +133,7 @@ After branches are created, **stop and ask the user to confirm before pushing or
 
 Only run after the user confirms Step 6.
 
-1. **Never force-push. Never push to the main/master branch.** Set each PR's GitHub base to its **primary parent's branch** (GitHub only supports a single base). For PRs with multiple parents, note the additional dependencies in the PR description so reviewers know the full merge order. Respect `PULL_REQUEST_TEMPLATE.md` if one exists. **Always open PRs as drafts by default** — pass `--draft` to `gh pr create` unless the user explicitly requested non-draft/ready-for-review PRs. As each PR is pushed and opened, update its row in the Status table (Status + URL) and save the file.
+1. **Never force-push. Never push to the main/master branch.** Set each PR's GitHub base to its **primary parent's branch** (GitHub only supports a single base). For PRs with multiple parents, note the additional dependencies in the PR description so reviewers know the full merge order. **If `PULL_REQUEST_TEMPLATE.md` exists** (check `.github/PULL_REQUEST_TEMPLATE.md`, `.github/pull_request_template.md`, `docs/PULL_REQUEST_TEMPLATE.md`, or repo root), use it as the PR body and fill in each section based on the PR's changes — do not submit the template with empty placeholders. **Always open PRs as drafts by default** — pass `--draft` to `gh pr create` unless the user explicitly requested non-draft/ready-for-review PRs. As each PR is pushed and opened, update its row in the Status table (Status + URL) and save the file.
 
 2. On failure (merge conflict, type-check failure, push rejected, etc.): set that PR's Status to `failed`, leave a short note in the file explaining what broke, save, and surface the failure to the user before moving on.
 

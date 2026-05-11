@@ -17,11 +17,11 @@ allowed-tools: Bash, Read, Glob
 
 4. Review all changes (all commits since base) and draft:
    - A short PR title (under 70 characters)
-   - A concise description summarizing what changed and why
+   - A brief description (2-4 sentences or 3-5 bullets max) covering what changed and why. Skip restating the title, low-value details, and obvious implementation notes.
 
 5. Build the PR body:
    - **If a PR template exists:** Fill in the description/summary section. Preserve all other sections and placeholders from the template.
-   - **If no template:** Use a simple body with a `## Summary` section.
+   - **If no template:** Use a simple body with a `## Summary` section. Keep it tight — no filler headings, no "Test plan" unless there's something non-obvious to call out.
 
 6. Create the PR using `gh pr create` with a HEREDOC for the body:
    ```

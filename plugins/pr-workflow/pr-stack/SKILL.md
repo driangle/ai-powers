@@ -1,7 +1,7 @@
 ---
 name: pr-stack
 description: Split a large feature branch into multiple smaller PRs of max 20 files each. Use when the user wants to break up a big branch, split changes into stacked or parallel PRs, asks "how do I split this PR", mentions a branch has too many files, or wants a PR splitting strategy. Also triggers on phrases like "split this into PRs", "break up this branch", "chunk these changes", "PR plan", or "too many files in this PR".
-allowed-tools: Bash, Read, Write, Glob
+allowed-tools: Bash(git *), Bash(gh pr *), Bash(grep:*), Bash(pnpm *), Bash(mkdir -p ~/.prs), Read, Write, Glob
 ---
 
 # PR Stack — Split a branch into multiple PRs

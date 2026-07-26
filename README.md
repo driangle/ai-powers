@@ -36,6 +36,7 @@ Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`
 - **audit-docs** - Audit documentation coverage: discover CLI commands, APIs, config options, and features, then cross-reference against docs to find gaps and stale content
 - **dead-code** - Find dead code: unused exports, orphaned files, unreachable code paths, unused dependencies, and stale artifacts
 - **oddities** - Scan a scope of code (directory, module, branch diff) for unconventional, strange, questionable, or opaque things — latent bugs, unexpected complexity, inconsistencies, odd design, and library/API workarounds; produces a prioritized reading list, not a refactor plan
+- **refactor-plan** - Produce a ranked refactoring plan for the code you just worked with, each suggestion tagged with priority and effort and sorted most- to least-recommended; grounded in files touched during the session, meant to run right after a task
 - **test-audit** - Audit test suites for legitimacy: detect tautologies, over-mocking, trivially-passing assertions, and misleading coverage
 
 ### codebase-ops

@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "PR workflow and commit skills",
-    "version": "0.0.32"
+    "version": "0.0.33"
   },
   "plugins": [
     {
@@ -27,7 +27,7 @@
     },
     {
       "name": "codebase-analysis",
-      "description": "Codebase analysis skills: comprehensive audits (security, privacy, architecture, code quality) and dead code detection",
+      "description": "Codebase analysis skills: comprehensive audits (security, privacy, architecture, code quality), dead code detection, and prioritized refactor plans",
       "source": "./plugins/codebase-analysis",
       "strict": false,
       "skills": [
@@ -36,6 +36,7 @@
         "./audit-docs",
         "./dead-code",
         "./oddities",
+        "./refactor-plan",
         "./test-audit"
       ]
     },

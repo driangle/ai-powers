@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "PR workflow and commit skills",
-    "version": "0.0.33"
+    "version": "0.0.34"
   },
   "plugins": [
     {
@@ -22,7 +22,8 @@
         "./pr-review",
         "./pr-review-report",
         "./pr-triage",
-        "./pr-stack"
+        "./pr-stack",
+        "./rebase-merge"
       ]
     },
     {

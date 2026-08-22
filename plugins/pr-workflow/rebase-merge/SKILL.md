@@ -23,14 +23,18 @@ Merge the current branch into a target branch using rebase + fast-forward only.
    - Read each conflicted file, resolve the conflict markers by combining both sides' intent (favor the current branch's changes when the sides are genuinely incompatible), then `git add` the file.
    - Continue with `git rebase --continue`. Repeat until the rebase completes.
    - If a conflict cannot be resolved confidently, run `git rebase --abort` (this leaves the original branch checked out) and report which files were problematic.
-5. Fast-forward merge into the target:
+5. Validate the rebased branch before merging — this is the exact commit the target will point to:
+   - Determine the project's conventional validation command, in order of preference: instructions in `CLAUDE.md`, a `check` or `test` target in a `Makefile`, a `check`/`test`/`lint` script in `package.json`, or the language's standard (`cargo test`, `go test ./...`, `pytest`, etc.).
+   - Run it. If validation fails, do NOT merge: report the failures and stop, leaving the rebased branch checked out so the user can fix it.
+   - If no validation command can be found, tell the user validation was skipped and continue.
+6. Fast-forward merge into the target:
    ```
    git checkout <target>
    git merge --ff-only <branch>
    ```
-6. If the fast-forward merge fails (target has commits not in the rebased branch), inform the user the target moved and a fast-forward is not possible.
-7. On success, run `git log --oneline -3` on the target and show the user the result.
-8. Return to the original branch: `git checkout <branch>`. Then verify with `git rev-parse --abbrev-ref HEAD` that the checked-out branch matches the original branch recorded in step 2; if it doesn't, check it out and inform the user.
+7. If the fast-forward merge fails (target has commits not in the rebased branch), inform the user the target moved and a fast-forward is not possible.
+8. On success, run `git log --oneline -3` on the target and show the user the result.
+9. Return to the original branch: `git checkout <branch>`. Then verify with `git rev-parse --abbrev-ref HEAD` that the checked-out branch matches the original branch recorded in step 2; if it doesn't, check it out and inform the user.
 
 ## Notes
 

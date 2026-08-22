@@ -28,8 +28,8 @@ Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`
 - **pr-review-report** - Generate a Slack-friendly triage report of open PRs for a team, author, or set of repos (script-backed, deterministic)
 - **pr-triage** - Pure-prompt variant of pr-review-report: same Slack-ready triage output driven by `gh` calls and prompt-embedded bucketing rules, no helper script
 - **pr-stack** - Split large feature branches into smaller, stacked PRs
-- **rebase-merge** - Rebase the current branch onto a target branch, resolve conflicts, then fast-forward merge (aborts if fast-forward isn't possible); always finishes back on the original branch
-- **sync-worktrees** - Synchronize worktrees with main: rebase each worktree branch onto main, fast-forward merge it into main, then fast-forward all branches back up to the final main
+- **rebase-merge** - Rebase the current branch onto a target branch, resolve conflicts, validate with the project's conventional checks, then fast-forward merge (aborts if fast-forward isn't possible); always finishes back on the original branch
+- **sync-worktrees** - Synchronize worktrees with main: rebase each worktree branch onto main, validate it with the project's conventional checks, fast-forward merge it into main, then fast-forward all branches back up to the final main; each worktree ends on the branch it started on
 
 ### codebase-analysis
 

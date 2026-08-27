@@ -46,7 +46,7 @@ Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`
 - **refactor** - Structured refactoring: extract module, split file, inline, rename, simplify, decouple, reorganize
 - **migrate** - Perform codebase migrations: upgrade dependencies, swap libraries, adopt new APIs or patterns
 - **triage-dependabot** - Triage Dependabot alerts: group by package, find high-payoff upgrades and removal candidates, then plan a fix
-- **setup-targets** - Set up standardized build targets (compile, lint, test, build) per project, top-level check/check-lite, pre-commit hook, and CI workflow
+- **setup-targets** - Bootstrap a project's checks: standardized build targets (compile, lint, format-check, test, build) per project, enforced lint standards (max 200 lines/file, max 50 lines/function, layered imports), top-level check/check-lite, pre-commit hook running check-lite, and CI running check
 
 ### release
 

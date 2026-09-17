@@ -36,9 +36,19 @@ If no task ID or query is provided, the next available task is selected automati
 
 3. **Verify the task.** Once the work is done, invoke the `/verify-task` skill with the same task ID. If verification fails, fix the issues and re-verify until it passes.
 
-4. **Mark the task complete.** Invoke the `/complete-task` skill with the task ID.
+4. **Reconcile the backlog.** A task rarely finishes exactly as written. Before completing it, ask whether any of this happened:
+   - **Postponed** — something in the task's scope you deliberately did not do.
+   - **Shifted** — work that belonged to a different task, or that you moved out of this one into another.
+   - **Missing** — work you discovered that no task covers.
+   - **Follow-up** — the task is done but left something behind: a `TODO`, a skipped test, a temporary shim, a doc that is now stale.
 
-5. **Commit your changes.** Invoke the `/commit` skill to commit all changes with a conventional commit message.
+   If none of it happened, skip this step. If any of it did, spawn the `backlog-reconciler` subagent (shipped in the `planning` plugin — if it is not installed, do the reconciliation inline and say so) with the task ID and your full list of loose ends — including the ones you suspect are not worth filing. Do not reconcile inline: the point of the subagent is that it comes to the backlog without the tunnel vision of having just written the code, so it finds the existing task that already covers a loose end instead of filing a near-duplicate.
+
+   Accept its answer. If it hands back `fix now:` items, do them in this working tree before step 5, then re-run verification — a fix after a green gate is an unverified fix. Report its arithmetic line and the ids it touched in your closing message.
+
+5. **Mark the task complete.** Invoke the `/complete-task` skill with the task ID.
+
+6. **Commit your changes.** Invoke the `/commit` skill to commit all changes with a conventional commit message. The reconciler's task edits land in the same commit as the work.
 
 ## Notes
 

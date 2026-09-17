@@ -59,4 +59,10 @@ Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`
 ### execution
 
 - **fix-feedback** - Address bug reports or feature feedback with a test-first workflow: reproduce with a failing test, then fix
-- **work** - Pick up the next task, execute it, verify it, mark it complete, and commit
+- **work** - Pick up the next task, execute it, verify it, reconcile the backlog, mark it complete, and commit
+
+## Agents
+
+### planning
+
+- **backlog-reconciler** - Reconciles the task backlog with what actually happened during a task — postponed, shifted, missing and follow-up work. Spawned by `work` before a task is completed; decides each loose end's disposition on a cheapest-first ladder (already covered → fix now → drop → amend an existing task → file a new one), retires tasks the finished work made obsolete, and reports back the ids it touched with a net-change line. It holds the bar on backlog growth rather than filing everything it is handed.

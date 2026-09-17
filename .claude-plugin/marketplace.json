@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "PR workflow and commit skills",
-    "version": "0.0.38"
+    "version": "0.0.39"
   },
   "plugins": [
     {
@@ -63,14 +63,15 @@
     },
     {
       "name": "planning",
-      "description": "Pre-coding project planning: decompose specs, requirements, and design docs into actionable task files",
+      "description": "Project planning and backlog shaping: decompose specs, requirements, and design docs into actionable task files, and reconcile the backlog as tasks finish",
       "source": "./plugins/planning",
       "strict": false,
-      "skills": ["./spec-decompose"]
+      "skills": ["./spec-decompose"],
+      "agents": ["./agents/backlog-reconciler.md"]
     },
     {
       "name": "execution",
-      "description": "End-to-end task execution: pick up tasks, implement, verify, and commit in one step",
+      "description": "End-to-end task execution: pick up tasks, implement, verify, reconcile the backlog, and commit in one step",
       "source": "./plugins/execution",
       "strict": false,
       "skills": ["./fix-feedback", "./work"]

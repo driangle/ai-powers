@@ -1,7 +1,7 @@
 ---
 name: work
-description: "Pick up the next task, execute it, verify it, mark it complete, and commit. Use when the user wants to work through tasks one at a time, or says 'do the next task', 'work on the next item', or invokes /work. Optionally accepts a task ID and/or custom instructions."
-allowed-tools: Bash, Read, Glob, Grep, Edit, Write, Agent, Skill
+description: "Pick up the next task, execute it in its own git worktree, verify it, mark it complete, commit, and merge it back into main. Use when the user wants to work through tasks one at a time, or says 'do the next task', 'work on the next item', or invokes /work. Optionally accepts a task ID and/or custom instructions."
+allowed-tools: Bash, Read, Glob, Grep, Edit, Write, Agent, Skill, EnterWorktree, ExitWorktree
 ---
 
 # work
@@ -32,11 +32,26 @@ If no task ID or query is provided, the next available task is selected automati
    - If no input was provided, run `taskmd next --limit 1 --format json` to get the highest-priority ready task.
    - If no task is found, tell the user there are no remaining tasks and stop.
 
-2. **Do the task.** Invoke the `/do-task` skill with the task ID from step 1. If the user provided custom instructions, incorporate them into the work — they take priority over default approaches where applicable.
+2. **Enter a worktree for the task.** Isolate the work in its own git worktree, so `main` stays clean and several tasks can run side by side.
 
-3. **Verify the task.** Once the work is done, invoke the `/verify-task` skill with the same task ID. If verification fails, fix the issues and re-verify until it passes.
+   Create one with `EnterWorktree`, naming it after the task id (e.g. `EnterWorktree({ name: "01m266ww9" })`). This puts the session in `.claude/worktrees/<id>` on branch `task/<id>`. Do the rest of the task there.
 
-4. **Reconcile the backlog.** A task rarely finishes exactly as written. Before completing it, ask whether any of this happened:
+   Create a worktree when **either** holds:
+   - The work is tied to a task id — anything resolved in step 1 qualifies.
+   - The work is substantial enough to warrant isolation: multiple files, a refactor, anything that will not land in a single small commit.
+
+   Skip the worktree, and work in the current tree, when:
+   - The change is a trivial one-off with no task id (a typo, a one-line fix).
+   - The session is already inside a worktree (`EnterWorktree` refuses to nest) — reuse it.
+   - The repo is not a git repository.
+
+   Say which worktree you entered before starting the work.
+
+3. **Do the task.** Invoke the `/do-task` skill with the task ID from step 1. If the user provided custom instructions, incorporate them into the work — they take priority over default approaches where applicable.
+
+4. **Verify the task.** Once the work is done, invoke the `/verify-task` skill with the same task ID. If verification fails, fix the issues and re-verify until it passes.
+
+5. **Reconcile the backlog.** A task rarely finishes exactly as written. Before completing it, ask whether any of this happened:
    - **Postponed** — something in the task's scope you deliberately did not do.
    - **Shifted** — work that belonged to a different task, or that you moved out of this one into another.
    - **Missing** — work you discovered that no task covers.
@@ -44,13 +59,26 @@ If no task ID or query is provided, the next available task is selected automati
 
    If none of it happened, skip this step. If any of it did, spawn the `backlog-reconciler` subagent (shipped in the `planning` plugin — if it is not installed, do the reconciliation inline and say so) with the task ID and your full list of loose ends — including the ones you suspect are not worth filing. Do not reconcile inline: the point of the subagent is that it comes to the backlog without the tunnel vision of having just written the code, so it finds the existing task that already covers a loose end instead of filing a near-duplicate.
 
-   Accept its answer. If it hands back `fix now:` items, do them in this working tree before step 5, then re-run verification — a fix after a green gate is an unverified fix. Report its arithmetic line and the ids it touched in your closing message.
+   Accept its answer. If it hands back `fix now:` items, do them in this working tree before step 6, then re-run verification — a fix after a green gate is an unverified fix. Report its arithmetic line and the ids it touched in your closing message.
 
-5. **Mark the task complete.** Invoke the `/complete-task` skill with the task ID.
+6. **Mark the task complete.** Invoke the `/complete-task` skill with the task ID.
 
-6. **Commit your changes.** Invoke the `/commit` skill to commit all changes with a conventional commit message. The reconciler's task edits land in the same commit as the work.
+7. **Commit your changes.** Invoke the `/commit` skill to commit all changes with a conventional commit message. The reconciler's task edits land in the same commit as the work.
+
+8. **Merge back into `main` and clean up.** Only if you created a worktree in step 2. Skip this entire step if the user asked you not to merge (e.g. "leave it on a branch", "I want to review it first", "open a PR instead") — in that case leave the worktree in place, tell the user its path and branch, and stop.
+
+   Otherwise, from inside the worktree:
+   1. Confirm the working tree is clean (`git status --short`). If it is not, stop and report — step 7 should have committed everything.
+   2. Rebase onto `main`: `git rebase main`. Resolve conflicts by combining both sides' intent, favoring the task branch when the sides are genuinely incompatible; `git add` each resolved file and `git rebase --continue`. If a conflict cannot be resolved confidently, run `git rebase --abort`, leave the worktree in place, report the problematic files, and stop.
+   3. Re-run the project's validation command on the rebased branch — this is the exact commit `main` will point to. If it fails, do not merge: leave the worktree in place, report the failures, and stop.
+   4. Fast-forward `main` from the main worktree (do **not** `git checkout main` — `main` is checked out elsewhere and the checkout will fail): find its path in `git worktree list`, then run `git -C <main-path> merge --ff-only task/<id>`. If the fast-forward fails, `main` moved during the rebase — report it and stop.
+   5. Call `ExitWorktree({ action: "remove" })` to return to the original directory and delete the now-merged worktree and branch. If it refuses because of leftover changes, do not pass `discard_changes` — report what it listed and let the user decide.
+   6. Show `git log --oneline -3` from `main`.
 
 ## Notes
 
 - Only work on **one task** per invocation. If the user wants to continue, they can invoke `/work` again.
-- If a task is blocked by dependencies or cannot be completed, explain why and stop — do not skip to another task.
+- If a task is blocked by dependencies or cannot be completed, explain why and stop — do not skip to another task. Exit the worktree with `action: "keep"` if you already created one and made changes in it.
+- Do NOT push to a remote, and never create a merge commit — `main` only ever moves forward by fast-forward.
+- New worktrees branch from whatever the `worktree.baseRef` setting says — `fresh` (the default) branches from `origin/<default-branch>`, `head` from the current local HEAD. If local `main` is ahead of the remote, the step 8 rebase onto `main` is what reconciles the two; if the repo has no remote, set `worktree.baseRef` to `head`.
+- Whenever the run ends without merging — blocked task, failed validation, unresolvable conflict, or the user opting out — leave the worktree on disk and report its path and branch so the work is not stranded.

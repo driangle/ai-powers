@@ -59,7 +59,7 @@ Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`
 ### execution
 
 - **fix-feedback** - Address bug reports or feature feedback with a test-first workflow: reproduce with a failing test, then fix
-- **work** - Pick up the next task, execute it, verify it, reconcile the backlog, mark it complete, and commit
+- **work** - Pick up the next task, execute it, verify it, reconcile the backlog, mark it complete, and commit; isolates the work in a per-task git worktree (`.claude/worktrees/<id>` on `task/<id>`) when the task has an id or is substantial, then rebases, validates, fast-forward merges it into `main` and removes the worktree — unless the user asks not to merge
 
 ## Agents
 

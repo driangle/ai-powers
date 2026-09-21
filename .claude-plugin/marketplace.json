@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "PR workflow and commit skills",
-    "version": "0.0.41"
+    "version": "0.0.42"
   },
   "plugins": [
     {
@@ -75,6 +75,13 @@
       "source": "./plugins/execution",
       "strict": false,
       "skills": ["./fix-feedback", "./work"]
+    },
+    {
+      "name": "retrospective",
+      "description": "Session retrospectives: analyse the agent's own transcript for failures, retries, redone work, and user corrections, then file the durable lessons",
+      "source": "./plugins/retrospective",
+      "strict": false,
+      "skills": ["./reflect"]
     }
   ]
 }

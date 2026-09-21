@@ -14,7 +14,7 @@ From inside Claude Code interactive mode:
 /plugin install <plugin_name>@driangle-ai-powers
 ```
 
-Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`, `planning`, `execution`
+Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`, `planning`, `execution`, `retrospective`
 
 ## Skills
 
@@ -60,6 +60,10 @@ Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`
 
 - **fix-feedback** - Address bug reports or feature feedback with a test-first workflow: reproduce with a failing test, then fix
 - **work** - Pick up the next task, execute it, verify it, reconcile the backlog, mark it complete, and commit; isolates the work in a per-task git worktree (`.claude/worktrees/<id>` on `task/<id>`) when the task has an id or is substantial, initializes it with the project's dependency install and any gitignored config it needs, then rebases, validates, fast-forward merges it into `main` and removes the worktree — unless the user asks not to merge
+
+### retrospective
+
+- **reflect** - End-of-session retrospective driven by the real session transcript, not memory: locates the transcript (via `vibeview` if installed, otherwise from `~/.claude/projects/`), mines it for failed tool calls, retry loops, file churn, slow calls and the steering log of user corrections, classifies each finding by kind with its cost and counterfactual, reports for approval, then files the durable lessons as a dated reflection note plus tasks or `CLAUDE.md` rules
 
 ## Agents
 

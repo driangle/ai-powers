@@ -17,11 +17,18 @@ allowed-tools: Bash, Read, Glob
 
 4. Review all changes (all commits since base) and draft:
    - A short PR title (under 70 characters)
-   - A brief description (2-4 sentences or 3-5 bullets max) covering what changed and why. Skip restating the title, low-value details, and obvious implementation notes.
+   - A description saying what changed and why, at the level a reviewer needs before reading the diff. Nothing more. Let the size of the change decide the length — a one-line PR gets one line. Prefer short bullets over prose.
+
+   Keep it lean:
+   - No preamble, no restating the title, no closing summary sentence.
+   - No file-by-file walkthrough, no listing renamed symbols or moved code.
+   - No "Testing", "Test plan", "Notes", "Impact", or "Motivation" sections unless the template asks for them.
+   - No bold lead-ins on bullets. No nested bullets.
+   - Don't explain the obvious (that a test was added, that a type was updated, that docs were kept in sync).
 
 5. Build the PR body:
-   - **If a PR template exists:** Fill in the description/summary section. Preserve all other sections and placeholders from the template.
-   - **If no template:** Use a simple body with a `## Summary` section. Keep it tight — no filler headings, no "Test plan" unless there's something non-obvious to call out.
+   - **If a PR template exists:** Fill in the description/summary section only. Preserve all other sections and placeholders verbatim.
+   - **If no template:** Use just the description — no headings at all.
 
 6. Create the PR using `gh pr create` with a HEREDOC for the body:
    ```

@@ -64,6 +64,7 @@ Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`
 ### retrospective
 
 - **reflect** - End-of-session retrospective driven by the real session transcript, not memory: locates the transcript (via `vibeview` if installed, otherwise from `~/.claude/projects/`), mines it for failed tool calls, retry loops, file churn, slow calls and the steering log of user corrections, classifies each finding by kind with its cost and counterfactual, reports for approval, then files the durable lessons as a dated reflection note plus tasks or `CLAUDE.md` rules
+- **skill-scout** - Scout the real session transcript for work worth turning into a skill (hand-run procedures, steps the user dictated, instructions repeated across turns or sessions, knowledge that took effort to find, throwaway scripts); check each candidate against the installed skills and cheaper options (nothing, a `CLAUDE.md` line, a hook, extending an existing skill), propose only the new skills that clear the bar with a trigger, outline and transcript evidence, then hand the approved ones to `skill-creator`
 
 ## Agents
 

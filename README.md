@@ -54,6 +54,7 @@ Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`
 
 ### planning
 
+- **next-ticket** - List your open Linear tickets and recommend the one to work on next, optionally scoped to a project or topic; checks blocking relations and then reads each candidate's description for deferrals, open decisions and outside blockers that relations miss, and reports the pick, why, and why not the others
 - **spec-decompose** - Decompose specs, requirements, or design docs into actionable task files
 
 ### execution

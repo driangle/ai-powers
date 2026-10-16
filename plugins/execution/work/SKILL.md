@@ -1,7 +1,7 @@
 ---
 name: work
 description: "Pick up the next task, execute it in its own git worktree, verify it, mark it complete, commit, and merge it back into main. Use when the user wants to work through tasks one at a time, or says 'do the next task', 'work on the next item', or invokes /work. Optionally accepts a task ID and/or custom instructions."
-allowed-tools: Bash, Read, Glob, Grep, Edit, Write, Agent, Skill, EnterWorktree, ExitWorktree
+allowed-tools: Bash, Read, Glob, Grep, Edit, Write, Agent, Skill, EnterWorktree, ExitWorktree, ToolSearch, mcp__ccd_session_mgmt__set_session_title
 ---
 
 # work
@@ -31,6 +31,8 @@ If no task ID or query is provided, the next available task is selected automati
      - Run the constructed command and extract the task ID from the output.
    - If no input was provided, run `taskmd next --limit 1 --format json` to get the highest-priority ready task.
    - If no task is found, tell the user there are no remaining tasks and stop.
+
+   **Name the session after the task.** Once the task is known, rename the session so it is recognizable in the session list. If a session-title tool is available (in the Claude desktop app: `mcp__ccd_session_mgmt__set_session_title` with `session_id: "self"`; load it with `ToolSearch` first if it is deferred), call it with a title of the form `<id> · <summary>` — the task id, then a 2–5 word summary of what the task changes, not its full title. Aim for under ~40 characters, e.g. `042 · Retry failed webhook deliveries` or `01m266ww9 · Split auth middleware`. If no such tool is available (e.g. the plain CLI, where `/rename` is user-only), skip this silently. If the rename is declined, carry on — it is never a reason to stop.
 
 2. **Enter a worktree for the task.** Isolate the work in its own git worktree, so `main` stays clean and several tasks can run side by side.
 

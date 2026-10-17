@@ -69,7 +69,7 @@ Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`
 
 ### machine-ops
 
-- **disk-cleanup** - Free disk space: survey usage, size the regenerable caches (monorepo build caches, Docker, npm/pnpm/Homebrew, Xcode, app caches, stale `node_modules`, Claude Code worktrees), let the user pick what to clear, then report the space before and after; never touches personal files
+- **disk-cleanup** - Free disk space on macOS: survey usage, size the regenerable caches (monorepo build caches, Docker, npm/pnpm/Yarn/pip/uv/Homebrew, Xcode, app caches, stale `node_modules`, Claude Code worktrees), let the user pick what to clear, then report the space before and after; never touches personal files
 
 ## Agents
 

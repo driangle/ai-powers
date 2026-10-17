@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "PR workflow and commit skills",
-    "version": "0.0.49"
+    "version": "0.0.50"
   },
   "plugins": [
     {
@@ -82,6 +82,13 @@
       "source": "./plugins/retrospective",
       "strict": false,
       "skills": ["./reflect", "./skill-scout"]
+    },
+    {
+      "name": "machine-ops",
+      "description": "Local machine maintenance: survey disk usage and clear regenerable developer and app caches to reclaim space",
+      "source": "./plugins/machine-ops",
+      "strict": false,
+      "skills": ["./disk-cleanup"]
     }
   ]
 }

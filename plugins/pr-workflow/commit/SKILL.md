@@ -17,10 +17,11 @@ Stage and commit all uncommitted changes using an auto-generated commit message.
    ```
    git commit -m "<message>"
    ```
-   Append the co-author trailer:
+   Append a co-author trailer naming the model you are currently running as (do not hardcode a model name):
    ```
-   Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+   Co-Authored-By: Claude <model name> <noreply@anthropic.com>
    ```
+   If the session supplies its own attribution lines for commits, use those exactly instead.
 5. Run `git status` after committing to confirm success.
 6. Show the user the commit hash and message.
 

@@ -44,7 +44,7 @@ The script prints a JSON blob on stdout with this shape:
 ```json
 {
   "org": "acme",
-  "teams": ["platform"],
+  "teams": ["backend"],
   "authors": [],
   "repos": ["api", "web"],
   "stale_hours": 24,
@@ -92,7 +92,7 @@ Every bullet uses the same shape: `open <age>` first (always labeled — so the 
 ### Rendering rules
 
 - **Omit empty buckets entirely** — don't print a heading for an empty bucket.
-- **Header line** — describe the scope from the filters. Single team → `team <name>`; multiple teams → `teams <t1>, <t2>`. Single author → `@<user>`; multiple authors → `@<a>, @<b>`. Combine non-empty pieces with ` / ` (e.g. `teams choco-ai, platform / @ebukaume`). If only repos are set, fall back to `repos: <list>`.
+- **Header line** — describe the scope from the filters. Single team → `team <name>`; multiple teams → `teams <t1>, <t2>`. Single author → `@<user>`; multiple authors → `@<a>, @<b>`. Combine non-empty pieces with ` / ` (e.g. `teams backend, frontend / @jess`). If only repos are set, fall back to `repos: <list>`.
 - **Age** — prefix with `open` and format `age_hours` (hours since opened) as `<N>h` under 24 hours, otherwise `<N>d`. Round sensibly.
 - **Links** — use Slack's `<url|text>` syntax. The link text should be `<repo-short-name>#<number>` (strip the `org/` prefix from `repo` for brevity).
 - **Sizes** — only include `+additions/-deletions` in the *Awaiting review* bucket. Elsewhere it's noise.
@@ -105,7 +105,7 @@ Every bullet uses the same shape: `open <age>` first (always labeled — so the 
 ### Example output
 
 ```
-*PR review report — team platform* · 5 open · _Apr 16, 2026_
+*PR review report — team backend* · 5 open · _Apr 16, 2026_
 
 :fire: *Needs attention* (3)
 • <https://github.com/acme/api/pull/300|api#300> — Refactor token cache _by @jess_ · open 30d · stale 15d

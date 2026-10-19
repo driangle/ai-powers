@@ -44,7 +44,7 @@ Check whether the user has already reviewed this PR: `gh api repos/{owner}/{repo
 
 ## Output
 
-Print the review directly — do NOT post comments to the PR unless the user explicitly asks.
+Print the review directly — do NOT post comments to the PR unless the user explicitly asks. When they do, follow `references/posting.md`; it applies to a follow-up review's findings too.
 
 Format: H2 title with PR name, then the verdict line, then a **"What this PR does"** section explaining the changes (from step 3), followed by a **"Findings"** section, then a **"Positives"** section noting what was done well.
 

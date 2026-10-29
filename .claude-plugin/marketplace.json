@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "PR workflow and commit skills",
-    "version": "0.0.55"
+    "version": "0.0.56"
   },
   "plugins": [
     {
@@ -72,10 +72,10 @@
     },
     {
       "name": "execution",
-      "description": "End-to-end task execution: pick up tasks, implement, verify, reconcile the backlog, and commit in one step",
+      "description": "End-to-end task execution: pick up tasks, implement, verify, reconcile the backlog, and commit in one step; or dispatch a backlog across parallel sessions and coordinate them",
       "source": "./plugins/execution",
       "strict": false,
-      "skills": ["./fix-feedback", "./work"]
+      "skills": ["./dispatch", "./fix-feedback", "./work"]
     },
     {
       "name": "retrospective",

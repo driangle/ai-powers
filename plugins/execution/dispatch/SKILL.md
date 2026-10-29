@@ -1,6 +1,6 @@
 ---
 name: dispatch
-description: "Work through a backlog in parallel by delegating each task to its own session (e.g. `/work <id>`), while staying the coordinator: pick only tasks that need no human input and are not blocked, never run two that touch the same area, cap how many run at once by the machine's load, keep a ledger of what landed, refill slots as sessions finish, and stop at an agreed exit condition. Use when the user asks to delegate, dispatch, fan out or parallelize pending tasks across sessions, 'keep N tasks going', 'work through the backlog in the background', or invokes /dispatch."
+description: "Work through a backlog in parallel by delegating each task to its own session (e.g. `/work <id>`), while staying the coordinator. The backlog can be taskmd files (any `taskmd list`/`next`/`search` command), Linear tickets, or Jira issues (JQL). The coordinator must pick only tasks that need no human input and are not blocked, never run two that touch the same area, cap how many run at once by the machine's load, keep a ledger of what landed, refill slots as sessions finish, and stop at an agreed exit condition. Use when the user asks to delegate, dispatch, fan out or parallelize pending tasks, Linear tickets or Jira issues across sessions, 'keep N tasks going', 'work through the backlog in the background', or invokes /dispatch."
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, ToolSearch, SendMessage, mcp__ccd_session__start_session, mcp__ccd_session_mgmt__list_sessions, mcp__ccd_session_mgmt__get_session
 ---
 
@@ -14,12 +14,36 @@ then checking what actually landed.
 
 Any of these, all optional:
 
-- **The task set**, as a command or a description. Examples: `taskmd list --status pending
-  --sort created_at --limit 20 --reverse`, "the screencast tasks", or an explicit list of ids.
-  Default: the project's pending tasks.
-- **The per-task prompt**: what each session is started with. Default: `/work <id>`.
+- **The task set**, as a command, a query, or a description. Examples: `taskmd list --status
+  pending --sort created_at --limit 20 --reverse`, `taskmd next --scope cli --limit 10`, a JQL
+  query, "my Linear tickets in the Payments project", "the screencast tasks", or an explicit
+  list of ids. Default: the source's own default (see the reference file).
+- **The per-task prompt**: what each session is started with. Default: the source's, which
+  is `/work <id>` for taskmd.
 - **Concurrency**, e.g. "at most 2 at a time". Default: decided from the machine in step 3.
 - **The exit condition**, e.g. "stop after 20 complete", "until the list is done", "until 6pm".
+
+## Task source
+
+The coordination below works the same for every backlog. Only six operations depend on
+where the tasks live: **list** the set, **read** one task with its dependencies and area,
+find what is **in flight**, the **default prompt**, what counts as **landed**, and how to
+**detect changes**. Work out the source first, then read its reference file and use it
+wherever a step names one of those operations:
+
+| Source | Recognize it by | Reference |
+|---|---|---|
+| taskmd | a command starting with `taskmd`, or a taskmd tasks directory in the repo | `references/taskmd.md` |
+| Linear | a Linear URL or view, "Linear" in the request, or Linear MCP tools and no taskmd | `references/linear.md` |
+| Jira | JQL, an Atlassian URL, "Jira" in the request, or Atlassian tools and no taskmd | `references/jira.md` |
+
+Ids like `ENG-123` look the same in Linear and Jira. If the request and the repo's
+`CLAUDE.md` do not settle it, check which tracker's tools are connected, and ask if both
+are. For any other source (GitHub issues, a `TODO.md`), map the six operations onto it
+the same way, and state the mapping in one line before starting.
+
+When the user gives a command or a query, run it **as given**. Add only what the reference
+says to add, such as an output format, and keep its filters, sort, and limit.
 
 ## Step 0: Settle the exit condition first
 
@@ -28,19 +52,24 @@ the most attractive ones to start next. If the user gave none, propose one befor
 anything and get a yes. The usual default is "every task in the starting set has landed or
 been skipped, and nothing outside that set is started". State the choice in a line.
 
-Count only work that **landed** (merged or committed to the target branch, task marked
-complete). A session that reported finishing is not counted until you have checked.
+Count only work that **landed**, as the source defines it: for taskmd, committed to the
+target branch with the task marked complete; for a tracker, a PR opened or merged. When a
+source offers a choice, settle it here along with the exit condition. A session that
+reported finishing is not counted until you have checked.
 
 ## Step 1: Gather candidates
 
-Run the task-set command. For each candidate, read the **whole task file**, not just the
-title, and record:
+**List** the task set. Keep the order it comes back in, because a command like `taskmd next`
+or a sorted query already expresses the user's ranking. For each candidate, **read** the
+**whole task**, meaning the file or the ticket description, not just the title, and record:
 
 - **Status and dependencies.** A task is blocked if any dependency is not completed. Look up
-  each dependency's status yourself; a dependency on a task that is running right now is still
-  a block.
+  each dependency's status yourself, even when the list command already filters blocked
+  tasks; a dependency on a task that is running right now is still a block.
 - **Area.** This means the files, directories, modules and docs the task names or will
-  obviously touch, plus its tags. Grep the body for paths. This is what conflict checks use.
+  obviously touch, plus its tags, labels, or components. Grep the body for paths. This is
+  what conflict checks use. Tracker tickets name fewer files, so when the area is a guess,
+  treat it as wider than it looks.
 - **Autonomy.** Can a session finish this with no one at the keyboard? Exclude a task that:
   - is marked manual, or is a decision the user owns ("decide where X is hosted", "pick a
     vendor", a privacy or policy call);
@@ -57,8 +86,8 @@ title, and record:
 
 - **Size and priority**, for ordering.
 
-Also check what is **already in flight**. That means tasks marked in progress, existing worktrees
-(`git worktree list`), and running sessions (`list_sessions`). Their areas are occupied
+Also check what is **already in flight**. That means what the source marks in progress,
+existing worktrees (`git worktree list`), and running sessions (`list_sessions`). Their areas are occupied
 even though you did not start them. If the user asks you to leave something alone, do.
 
 ## Step 2: Keep a ledger
@@ -67,9 +96,11 @@ Write a ledger file in the scratchpad directory (or another path outside the rep
 update it on every event. Long dispatches get their context summarized, and the ledger
 is what survives. Keep in it:
 
-- the exit condition and the rules the user added along the way;
-- **Landed**: numbered, with each task's commit;
-- **Running**: task id, session id, and area;
+- the source, the exit condition, what counts as landed, and the rules the user added
+  along the way;
+- **Landed**: numbered, with each task's commit or PR;
+- **Running**: task id, session id, area, and the change marker the source uses (the
+  branch HEAD for taskmd, the ticket's last-updated time for a tracker);
 - **Skipped**: task id and the reason;
 - **Waiting on**: tasks held back by a conflict with a running one, and which one;
 - **Next candidates**, in order.
@@ -91,7 +122,8 @@ and everything takes longer than running fewer.
 
 ## Step 4: Choose a non-conflicting batch
 
-Pick from the eligible candidates, by priority then age, until the cap is reached. A candidate
+Pick from the eligible candidates in list order until the cap is reached. If the list
+carried no order of its own, use priority, then age. A candidate
 is **not** startable if its area overlaps a running session's area, or another task you are
 choosing in this round. Overlap means the same files, the same subsystem (e.g. "the
 screencast recorder", "the sequencer"), or the same docs page. Two tasks that edit
@@ -109,7 +141,8 @@ Start one session per task with the platform's session tool. In the Claude deskt
 is `mcp__ccd_session__start_session`; load it with `ToolSearch` if it is deferred. Use:
 
 - `initiation: "user_asked"`, since the user asked for the delegation;
-- `prompt`: the per-task prompt, e.g. `/work 01m639pma`, and nothing else;
+- `prompt`: the per-task prompt, e.g. `/work 01m639pma` or the source's written tracker
+  prompt with the ticket id filled in, and nothing else;
 - `background`: one or two sentences covering:
   - that this is part of a batch dispatch;
   - which tasks run alongside it and their areas, so it does not wander into them;
@@ -133,8 +166,9 @@ A session finishing a turn is a **report, not proof**. Most turns end with "wait
 check". For each note:
 
 1. **Read what it says.** If it is still validating, there is nothing to do; say so in one line.
-2. **When it says it landed, verify it.** Check that the target branch's log shows its commit
-   and that the task is marked completed. Only then add it to Landed in the ledger.
+2. **When it says it landed, verify it** the way the source defines landed: the commit on
+   the target branch and the task marked completed, or the PR found with `gh`. Only then
+   add it to Landed in the ledger.
 3. **Note what it filed.** Follow-up task ids go into Next candidates, and a note about a
    flaky check goes into your load judgement.
 4. **Refill.** Re-check load. If slots are free, re-run steps 1, 3 and 4 against the current
@@ -148,17 +182,19 @@ lands its own work.
 
 ## Step 7: When the source of truth changes under the sessions
 
-The user may pull, or other sessions may land and edit task files. When told "I pulled, tasks
-may have changed", or when you notice it:
+The user may pull, other sessions may land and edit task files, or someone may edit a
+ticket. When told "tasks may have changed", when you refill, or when you notice it:
 
-- Diff the task files of the **running** tasks between the last commit you knew and now
-  (`git diff <old>..HEAD -- <task files>`).
+- **Detect changes** to the **running** tasks with the source's method: a diff of their
+  task files since the HEAD you recorded, or their tickets' last-updated times against the
+  ledger.
 - If one changed, message **only** that session (`SendMessage` with its session id). Say
-  which commit changed it, summarize the new requirements in a few bullets, and tell it to
-  re-read the file. Do not message sessions whose tasks did not change.
-- Check whether the branch was rewritten (`git merge-base --is-ancestor <old> HEAD`). If it
-  was, tell the affected session to rebase onto the current target. Tell the user too, since
-  every rewrite restarts each landing session's validation.
+  what changed it (a commit, or a ticket edit), summarize the new requirements in a few
+  bullets, and tell it to re-read the task. Do not message sessions whose tasks did not
+  change.
+- Check whether the target branch was rewritten (`git merge-base --is-ancestor <old> HEAD`).
+  If it was, tell the affected session to rebase onto the current target. Tell the user too,
+  since every rewrite restarts each landing session's validation.
 - Changes to tasks nobody is running need no message. Note them in the ledger if they affect
   eligibility.
 

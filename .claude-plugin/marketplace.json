@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "PR workflow and commit skills",
-    "version": "0.0.58"
+    "version": "0.0.59"
   },
   "plugins": [
     {
@@ -93,10 +93,10 @@
     },
     {
       "name": "audio",
-      "description": "Audio production on macOS: catalog the installed VST3 and Audio Unit plugins, read their parameters and presets, and audition them into measurements, spectrograms and plain words",
+      "description": "Audio production on macOS: catalog the installed VST3 and Audio Unit plugins, read their parameters and presets, and audition them into measurements, spectrograms and plain words; and write SuperCollider synths and scores that run those plugins through VSTPlugin",
       "source": "./plugins/audio",
       "strict": false,
-      "skills": ["./vst"]
+      "skills": ["./vst", "./supercollider-vst"]
     }
   ]
 }

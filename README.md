@@ -76,6 +76,7 @@ Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`
 ### audio
 
 - **vst** - Know the VST3 and Audio Unit plugins installed on a Mac: a cached catalog of which ones open and make sound outside a DAW, every parameter and preset file of each, and auditions that render a fixed test into a WAV, a spectrogram and plain-word measurements (brightness, attack, release, pitch tracking, stereo width, reverb tail), plus a notes file for the user's own descriptions. Script-backed (pedalboard via `uv`); macOS only
+- **supercollider-vst** - Write SuperCollider synths and scores that run VST plugins through the VSTPlugin extension: the SynthDef and controller pattern, sandbox mode, MIDI and patterns, parameters by name or swept from a UGen by index, presets, and offline rendering with `Score.recordNRT`; with a live and an NRT example checked on a real machine
 
 ## Agents
 

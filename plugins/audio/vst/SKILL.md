@@ -72,7 +72,10 @@ where` prints it; `VST_CATALOG_DIR` overrides it): `catalog.json`,
    Compare candidates on the same numbers. Look at `spectrogram.png` when the
    shape over time matters.
 5. **Use it in the host,** with the names `inspect` printed. How a host loads
-   a plugin is the host's business: read its own docs or skill.
+   a plugin is the host's business: read its own docs or skill (for
+   SuperCollider, the `supercollider-vst` skill). Hosts differ in units: many,
+   VSTPlugin among them, take every parameter as 0..1 rather than the units
+   `inspect` shows.
 6. **Keep what the user tells you.** When the user says what a plugin sounds
    like or is good for, offer to add it to `notes.md` in their words, under
    `## <name as vst list spells it>`.

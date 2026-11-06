@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "PR workflow and commit skills",
-    "version": "0.0.57"
+    "version": "0.0.58"
   },
   "plugins": [
     {
@@ -90,6 +90,13 @@
       "source": "./plugins/machine-ops",
       "strict": false,
       "skills": ["./disk-cleanup"]
+    },
+    {
+      "name": "audio",
+      "description": "Audio production on macOS: catalog the installed VST3 and Audio Unit plugins, read their parameters and presets, and audition them into measurements, spectrograms and plain words",
+      "source": "./plugins/audio",
+      "strict": false,
+      "skills": ["./vst"]
     }
   ]
 }

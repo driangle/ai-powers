@@ -1,0 +1,6 @@
+#!/bin/sh
+# Runs vst.py with its Python dependencies, fetched and cached by uv.
+# Keep the requirements in step with REQUIREMENTS in vstlib/arch.py.
+here="$(cd "$(dirname "$0")" && pwd)"
+exec uv run --quiet --no-project --with 'pedalboard>=0.9.26,<0.10' --with 'numpy>=1.26' \
+  python "$here/vst.py" "$@"

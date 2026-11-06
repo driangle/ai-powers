@@ -14,7 +14,7 @@ From inside Claude Code interactive mode:
 /plugin install <plugin_name>@driangle-ai-powers
 ```
 
-Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`, `planning`, `execution`, `retrospective`, `machine-ops`
+Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`, `planning`, `execution`, `retrospective`, `machine-ops`, `audio`
 
 ## Skills
 
@@ -72,6 +72,10 @@ Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`
 ### machine-ops
 
 - **disk-cleanup** - Free disk space on macOS: survey usage, size the regenerable caches (monorepo build caches, Docker, npm/pnpm/Yarn/pip/uv/Homebrew, Xcode, app caches, stale `node_modules`, Claude Code worktrees), let the user pick what to clear, then report the space before and after; never touches personal files
+
+### audio
+
+- **vst** - Know the VST3 and Audio Unit plugins installed on a Mac: a cached catalog of which ones open and make sound outside a DAW, every parameter and preset file of each, and auditions that render a fixed test into a WAV, a spectrogram and plain-word measurements (brightness, attack, release, pitch tracking, stereo width, reverb tail), plus a notes file for the user's own descriptions. Script-backed (pedalboard via `uv`); macOS only
 
 ## Agents
 

@@ -1,0 +1,28 @@
+{
+  "since": "2026-08-15",
+  "until": "2026-10-14",
+  "window_by": "merged",
+  "include_open": true,
+  "group_by": ["project", "repo"],
+  "authors": [],
+  "ignore_reviewers": [],
+  "ignore_bots": true,
+  "large_pr_lines": 400,
+  "size_ignore_files": ["*.lock", "*package-lock.json", "*pnpm-lock.yaml", "*.snap", "*__snapshots__/*", "*__generated__/*", "*.generated.*", "*.min.js"],
+  "test_files": ["*.test.*", "*.spec.*", "*/test/*", "*/tests/*", "*/__tests__/*", "*/e2e/*"],
+  "metrics": [],
+  "exclude_metrics": [],
+  "cache_dir": "~/.cache/pr-metrics",
+  "clock": {
+    "mode": "business",
+    "timezone": "Europe/Berlin",
+    "workdays": [0, 1, 2, 3, 4],
+    "start": "09:00",
+    "end": "18:00"
+  },
+  "follow_up": {
+    "window_days": 7,
+    "fix_keywords": ["fix", "hotfix"],
+    "ignore_files": ["*package.json", "*yarn.lock", "*pnpm-lock.yaml", "*package-lock.json", "*CHANGELOG.md"]
+  }
+}

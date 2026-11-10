@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "PR workflow and commit skills",
-    "version": "0.0.60"
+    "version": "0.0.61"
   },
   "plugins": [
     {
@@ -15,6 +15,7 @@
       "source": "./plugins/pr-workflow",
       "strict": false,
       "skills": [
+        "./change-recap",
         "./commit",
         "./commit-msg",
         "./pr-open",

@@ -20,6 +20,7 @@ Available plugins: `pr-workflow`, `codebase-analysis`, `codebase-ops`, `release`
 
 ### pr-workflow
 
+- **change-recap** - Recap what changed in a repo, folder, team (ticket prefix) or product area over a timeframe, typically the week on Fridays: derives the organisation, team and tracker from context (asking only for what's missing), collects the merged PRs with `gh`, sets aside bot, dependency and cancelled-out revert PRs, groups related PRs into one item each by tracker initiative and project where known and otherwise by category, leads each with its effect in plain language for developers and managers, credits who built and reviewed it, flags half-merged changes and work behind feature flags, builds an HTML page and offers to publish it as a private Artifact
 - **commit** - Stage and commit all uncommitted changes with an auto-generated conventional commit message
 - **commit-msg** - Generate conventional commit messages from staged changes
 - **pr-open** - Open GitHub PRs with auto-generated titles and descriptions

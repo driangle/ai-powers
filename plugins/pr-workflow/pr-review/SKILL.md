@@ -13,7 +13,7 @@ Accepts a PR URL (e.g. `https://github.com/org/repo/pull/123`) or a PR number (f
 Check whether the user has already reviewed this PR: `gh api repos/{owner}/{repo}/pulls/{number}/reviews --jq "[.[] | select(.user.login == \"$(gh api user --jq .login)\")] | length"`.
 
 - **0** — first review: follow the steps below.
-- **More than 0** — follow-up review: follow `references/follow-up.md` instead of steps 2–6, then apply step 7 and the Output rules it points to. Do a first review anyway if the user asks for a full or fresh review.
+- **More than 0** — follow-up review: follow `references/follow-up.md` instead of steps 2–7, then apply step 8 and the Output rules it points to. Do a first review anyway if the user asks for a full or fresh review.
 
 ## Steps
 
@@ -30,15 +30,17 @@ Check whether the user has already reviewed this PR: `gh api repos/{owner}/{repo
    - What approach was taken — summarize the key changes across files
    - Call out any notable design decisions or trade-offs
 
-4. Review for: bugs, missing error handling, security issues, performance problems, naming/readability, convention violations, lock file anomalies, unsafe casts/patterns.
+4. Question the approach before the lines: does the change fix the cause or patch a symptom, is it at the right layer, and is there a sturdier alternative (watch for heuristics such as regexes or keyword lists over open-ended input like speech, free text or model output)? When several findings share one cause, report the cause as its own finding, above them.
 
-5. Classify each finding on two axes:
+5. Review for: bugs, missing error handling, security issues, performance problems, naming/readability, convention violations, lock file anomalies, unsafe casts/patterns.
+
+6. Classify each finding on two axes:
    - **Severity**: **High**, **Medium**, **Low**, or **Nit**.
    - **Blocker**: whether the PR should not merge until it is fixed (bugs, security issues, data loss, broken contracts, violations of explicit repo rules). A Nit is never a blocker.
 
-6. Assign each finding a stable id: `F1`, `F2`, … numbered in output order. The user refers to findings by these ids later (e.g. "fix F2", "post F1 and F3"), so reuse the same ids when the conversation returns to this review.
+7. Assign each finding a stable id: `F1`, `F2`, … numbered in output order. The user refers to findings by these ids later (e.g. "fix F2", "post F1 and F3"), so reuse the same ids when the conversation returns to this review.
 
-7. Decide the verdict. It follows from the blockers, so the two never disagree:
+8. Decide the verdict. It follows from the blockers, so the two never disagree:
    - **✅ Approve** — no blockers. Non-blocking findings can be addressed in this PR or a follow-up.
    - **❌ Request changes** — one or more blockers.
 

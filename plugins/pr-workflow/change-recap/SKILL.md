@@ -227,8 +227,16 @@ Draft the recap as Markdown first; it is the content of the page in step 7.
 ```markdown
 # Change recap: <scope> · <start> – <end>
 
-<Two or three sentences: the headline of the period — the one or two changes that matter most, and
-anything a reader must act on, such as a half-merged change or a fix that still needs deploying.>
+**<The change that matters most, as a short heading>** <`Test only` or `Behind a flag`, when it applies>
+- <One fact about what changed for users, in one short sentence.>
+- <Another fact: two to four bullets in all.>
+
+**<The second change that matters most, when there is one>**
+- <...>
+
+**Needs follow-up**
+- <Each thing a reader must act on: a half-merged change and the open pull request it waits for, a
+  fix that still needs deploying, work behind a flag, a cleanup left for later.>
 
 ## <Initiative>
 
@@ -265,6 +273,17 @@ translation and cancelled-out revert pull requests>.
 `N` and `M` count only the pull requests linked in the recap; the left-out ones are counted
 separately after them. List the people in **Who did what** alphabetically.
 
+How to write the headline:
+
+- Pick the one or two changes that matter most in the period. Give each a short heading that names
+  the change in plain words ("Pickup slots can be booked from the mobile app"), then two to four
+  bullets of one fact each: what users can now do, what was broken and is fixed, who it affects.
+- Never write the headline as a paragraph. A reader scans the headings and bullets; a block of
+  sentences hides the second change behind the first.
+- Put a limit on who sees the change, such as test calls only or behind a flag, on the heading as a
+  badge, not as a sentence in the bullets.
+- Keep the follow-up items in their own list, not mixed into the highlights.
+
 How to write the items:
 
 - Lead with the effect, in the words a customer or a support agent would use: "Customers now see
@@ -291,8 +310,8 @@ transcript of the Markdown:
 - A header with the scope, the dates and the generation date.
 - A summary strip: pull requests recapped, people, repositories, projects touched, and the count
   per category.
-- The headline paragraph, with anything to act on — half-merged changes, fixes that still need
-  deploying, work behind a feature flag — as a callout right under it.
+- The headline as one block per highlight, each a heading with its bullets, side by side when the
+  page is wide and stacked on a phone. **Needs follow-up** goes in a callout right under them.
 - One section per initiative, and one block per project inside it, in the order of step 5, with
   the project's name linked to the tracker when it came from there. Each item is a card with its
   category badge, bold headline, the explanation, small badges for "behind a flag" or "half
@@ -309,8 +328,8 @@ Open the page for the user if the harness can show a local HTML file.
 
 ## 8. Reply and offer to publish
 
-In the chat, give the path to the page, the headline paragraph and the action items — not the whole
-recap again.
+In the chat, give the path to the page, the headline highlights with their bullets and the
+follow-up items — not the whole recap again.
 
 Then offer to publish the page as a Claude Artifact, so it gets a private link the user can share
 with their team. Publish only when the user says yes; the page stays private until they share it.

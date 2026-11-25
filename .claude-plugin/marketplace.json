@@ -6,12 +6,12 @@
   },
   "metadata": {
     "description": "PR workflow and commit skills",
-    "version": "0.0.63"
+    "version": "0.0.64"
   },
   "plugins": [
     {
       "name": "pr-workflow",
-      "description": "Collection of PR and commit workflow skills including PR descriptions, reviews, stacking, commit messages, and PR health metrics",
+      "description": "Collection of PR and commit workflow skills including PR descriptions, reviews (with dependency-upgrade reviews), stacking, commit messages, and PR health metrics",
       "source": "./plugins/pr-workflow",
       "strict": false,
       "skills": [

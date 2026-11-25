@@ -1,12 +1,12 @@
 ---
 name: pr-review
-description: Review a GitHub PR and present findings as author-addressed comments. Use when the user asks to review a PR, gives a PR URL or number, or asks for code review feedback on a pull request. Also re-reviews a PR the user already commented on, checking which comments were addressed. Triggers on phrases like "review this PR", "look at this pull request", "code review", "the author addressed my feedback", "look at the PR again", "re-review", or any GitHub PR link.
-allowed-tools: Bash, Read, Glob
+description: Review a GitHub PR and present findings as author-addressed comments. Use when the user asks to review a PR, gives a PR URL or number, or asks for code review feedback on a pull request. Also re-reviews a PR the user already commented on, checking which comments were addressed. Reviews dependency-upgrade PRs (Dependabot, Renovate, Snyk, security bumps) by diffing the released library code between the two versions, bounding transitive upgrades by depth, and checking the changes against how the app uses the library. Triggers on phrases like "review this PR", "look at this pull request", "code review", "the author addressed my feedback", "look at the PR again", "re-review", "is this dependency bump safe", "will this upgrade break anything", or any GitHub PR link.
+allowed-tools: Bash, Read, Glob, Grep, Agent
 ---
 
 ## Input
 
-Accepts a PR URL (e.g. `https://github.com/org/repo/pull/123`) or a PR number (for the current repo).
+Accepts a PR URL (e.g. `https://github.com/org/repo/pull/123`) or a PR number (for the current repo), or several of them.
 
 ## Mode
 
@@ -14,6 +14,8 @@ Check whether the user has already reviewed this PR: `gh api repos/{owner}/{repo
 
 - **0** — first review: follow the steps below.
 - **More than 0** — follow-up review: follow `references/follow-up.md` instead of steps 2–7, then apply step 8 and the Output rules it points to. Do a first review anyway if the user asks for a full or fresh review.
+
+A first review of a **dependency upgrade** follows steps D1–D7 of `references/dependency-upgrade.md` instead of steps 1–5. Then it applies steps 6–8, and the Output rules in that file. A PR is one when its purpose is to move packages to new versions: it comes from Dependabot, Renovate or Snyk, or its title says it updates or bumps a dependency, and its diff is mostly manifests and lockfiles. Hand-written code changes in the same PR also get steps 4–5.
 
 ## Steps
 

@@ -17,15 +17,29 @@ Check whether the user has already reviewed this PR: `gh api repos/{owner}/{repo
 
 A first review of a **dependency upgrade** follows steps D1–D7 of `references/dependency-upgrade.md` instead of steps 1–5. Then it applies steps 6–8, and the Output rules in that file. A PR is one when its purpose is to move packages to new versions: it comes from Dependabot, Renovate or Snyk, or its title says it updates or bumps a dependency, and its diff is mostly manifests and lockfiles. Hand-written code changes in the same PR also get steps 4–5.
 
+## Workspace
+
+Every review, first or follow-up, reads the code from a standalone worktree checked out at the PR's latest head, so it sees the full files around each hunk and never touches the user's own checkout. One worktree per PR.
+
+1. **Find a clone.** Use the current repo if its `origin` is the PR's repo (`gh repo view --json nameWithOwner`), or a clone the user points to. With neither, clone it: `gh repo clone <owner>/<repo> ~/.worktrees/<repo>/pr-<number> -- --filter=blob:none`. That clone is the workspace, so skip step 3's `worktree add` and check out the head there with `git checkout --detach`.
+2. **Fetch the latest.** Get the PR's `headRefOid` and `baseRefName` from `gh pr view <pr> --json headRefOid,baseRefName`, then fetch both from the base repo, which also carries the head of a PR from a fork:
+   `git -C <clone> fetch origin <baseRefName> "+refs/pull/<number>/head:refs/remotes/origin/pr/<number>"`
+   If `origin/pr/<number>` is not `headRefOid`, the PR moved while fetching: fetch again.
+3. **Check out the head.** Reuse the PR's worktree if `git -C <clone> worktree list` already has it, and move it with `git -C <worktree> checkout --detach <headRefOid>`. Otherwise add one outside any repository:
+   `git -C <clone> worktree add --detach ~/.worktrees/<repo>/pr-<number> <headRefOid>`
+   A detached head never collides with a branch the user has checked out elsewhere.
+4. **Work only in the worktree.** Read, grep and run tests or linters there, with `git -C <worktree>` and absolute paths. Never check out, stash, reset or pull in the user's checkout. The PR's diff is `git -C <worktree> diff origin/<baseRefName>...HEAD`.
+5. **Keep it** for the rest of the conversation: a re-review or a question about a finding reuses it. Name its path at the end of the output, and remove it with `git -C <clone> worktree remove <worktree>` when the user is done with the PR.
+
 ## Steps
 
 1. Fetch in parallel:
    - `gh pr view <pr> --json title,body,files,additions,deletions,baseRefName,headRefName`
    - `gh pr diff <pr>`
-   - Check if the repo has a CLAUDE.md (factor its conventions into the review)
+   - Read the repo's CLAUDE.md in the worktree, if it has one (factor its conventions into the review)
    - Only if the user explicitly asks: `gh api repos/{owner}/{repo}/pulls/{number}/comments`
 
-2. Read the full diff carefully. For large diffs, read persisted output files fully.
+2. Read the full diff carefully. For large diffs, read persisted output files fully. Open the changed files in the worktree to read each hunk in context, and follow callers and tests the diff does not show.
 
 3. Write a clear explanation of the PR:
    - What problem does this PR solve and why?

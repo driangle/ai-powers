@@ -112,10 +112,9 @@ Run `lockdiff` for each changed lockfile, with every target as `--target`. Read 
 ### D4. Find how the app uses each deep and skim package
 
 Do this before reading any release diff: it settles which parts of the diff matter, and it rules packages out
-cheaply. Search the app at the PR's head: in a local clone, `git fetch origin <head-sha>` and then
-`git grep -n '<pattern>' <head-sha> -- <workspace paths>`. This leaves the working tree untouched. In zsh, write
-the SHA as `${sha}` in `git show "${sha}:path"`; a bare `$sha:` is read as a history modifier. Without a clone, use
-`gh search code` or the contents API. Scope the search to the workspaces from `lockdiff --json`'s `importers`.
+cheaply. Search the app at the PR's head in the review worktree (see Workspace in `SKILL.md`):
+`git -C <worktree> grep -n '<pattern>' -- <workspace paths>`. Scope the search to the workspaces from
+`lockdiff --json`'s `importers`.
 
 - **Declared but never imported**: a package in a manifest that no code imports has no call sites. Its indirect paths
   do not matter. Say so, skip its release diff, and suggest removing it in a follow-up.
